@@ -1,8 +1,8 @@
-== Poo Test
+= Poo Test
 
 Projeto apresentado como requisito para dispensa na disciplina
 
-=== Critérios de Avaliação
+== Critérios de Avaliação
 
 * Utilizar classes abstratas, classes não abstratas, e interfaces;
 * Uso adequado da OO: classes e encapsulamento;
