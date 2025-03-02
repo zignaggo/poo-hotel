@@ -1,0 +1,20 @@
+services:
+  app-java:
+    image: hotel-java-app:0.0.1
+    container_name: hotel
+    environment:
+      DB_URL: "jdbc:postgresql://postgres:5432/hotel"
+      DB_USER: "postgres"
+      DB_PASSWORD: "postgres"
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: "hotel"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    ports:
+      - "5432:5432"
