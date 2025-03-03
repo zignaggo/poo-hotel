@@ -18,7 +18,5 @@ Projeto apresentado como requisito para dispensa na disciplina
 
 === Modelagem
 
-==== Logico
-image::modeling/logico.png[./modeling/logico.png]
 ==== Relacional
-image::modeling/relational.png[./modeling/relational.png]
+image::modeling/relational.jpg[./modeling/relational.jpg]
