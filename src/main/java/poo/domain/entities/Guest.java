@@ -10,6 +10,15 @@ public class Guest extends BaseEntity {
   private String address;
   private Date birthDate;
 
+  public Guest(String cpf, String fullName, String email, String phone, String address, Date birthDate) {
+    this.cpf = cpf;
+    this.fullName = fullName;
+    this.email = email;
+    this.phone = phone;
+    this.address = address;
+    this.birthDate = birthDate;
+  }
+
   public Guest(int id, String cpf, String fullName, String email, String phone, String address, Date birthDate) {
     super(id);
     this.cpf = cpf;
@@ -19,6 +28,7 @@ public class Guest extends BaseEntity {
     this.address = address;
     this.birthDate = birthDate;
   }
+
 
   public String getCpf() {
     return this.cpf;
