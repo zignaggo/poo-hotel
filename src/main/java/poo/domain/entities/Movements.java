@@ -2,30 +2,22 @@ package poo.domain.entities;
 
 import java.util.Date;
 
-public class Movements {
-  private int id;
+public class Movements extends BaseEntity{ 
   private int reservationId;
   private MovementsEnum type;
   private Date date;
   private Double amount;
 
-  public Movements(int reservationId, MovementsEnum type, Date date, Double amount) {
+  public Movements(int id, int reservationId, MovementsEnum type, Date date, Double amount) {
+    super(id);
     this.reservationId = reservationId;
     this.type = type;
     this.date = date;
     this.amount = amount;
   }
 
-  public int getId() {
-    return id;
-  }
-
-  public void setId(int id) {
-    this.id = id;
-  }
-
   public int getReservationId() {
-    return reservationId;
+    return this.reservationId;
   }
 
   public void setReservationId(int reservationId) {
@@ -33,7 +25,7 @@ public class Movements {
   }
 
   public MovementsEnum getType() {
-    return type;
+    return this.type;
   }
 
   public void setType(MovementsEnum type) {
@@ -41,7 +33,7 @@ public class Movements {
   }
 
   public Date getDate() {
-    return date;
+    return this.date;
   }
 
   public void setDate(Date date) {
@@ -49,11 +41,21 @@ public class Movements {
   }
 
   public Double getAmount() {
-    return amount;
+    return this.amount;
   }
 
   public void setAmount(Double amount) {
     this.amount = amount;
+  }
+
+  @Override
+  public String toString() {
+    return "Movements {" +
+        "reservationId=" + this.reservationId +
+        ", type=" + this.type +
+        ", date=" + this.date +
+        ", amount=" + this.amount +
+        '}';
   }
 
 }

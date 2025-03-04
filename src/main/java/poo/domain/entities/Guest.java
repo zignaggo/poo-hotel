@@ -2,7 +2,7 @@ package poo.domain.entities;
 
 import java.util.Date;
 
-public class Guest {
+public class Guest extends BaseEntity {
   private String cpf;
   private String fullName;
   private String email;
@@ -10,7 +10,8 @@ public class Guest {
   private String address;
   private Date birthDate;
 
-  public Guest(String cpf, String fullName, String email, String phone, String address, Date birthDate) {
+  public Guest(int id, String cpf, String fullName, String email, String phone, String address, Date birthDate) {
+    super(id);
     this.cpf = cpf;
     this.fullName = fullName;
     this.email = email;
@@ -20,7 +21,7 @@ public class Guest {
   }
 
   public String getCpf() {
-    return cpf;
+    return this.cpf;
   }
 
   public void setCpf(String cpf) {
@@ -28,7 +29,7 @@ public class Guest {
   }
 
   public String getFullName() {
-    return fullName;
+    return this.fullName;
   }
 
   public void setFullName(String fullName) {
@@ -36,7 +37,7 @@ public class Guest {
   }
 
   public String getEmail() {
-    return email;
+    return this.email;
   }
 
   public void setEmail(String email) {
@@ -52,7 +53,7 @@ public class Guest {
   }
 
   public String getAddress() {
-    return address;
+    return this.address;
   }
 
   public void setAddress(String address) {
@@ -60,7 +61,7 @@ public class Guest {
   }
 
   public Date getBirthDate() {
-    return birthDate;
+    return this.birthDate;
   }
 
   public void setBirthDate(Date birthDate) {
@@ -70,12 +71,13 @@ public class Guest {
   @Override
   public String toString() {
     return "Guest {" +
-        "cpf='" + cpf + '\'' +
-        ", fullName='" + fullName + '\'' +
-        ", email='" + email + '\'' +
-        ", phone='" + phone + '\'' +
-        ", address='" + address + '\'' +
-        ", birthDate=" + birthDate +
+        "cpf='" + this.cpf + '\'' +
+        ", id='" + this.getId() + '\'' +
+        ", fullName='" + this.fullName + '\'' +
+        ", email='" + this.email + '\'' +
+        ", phone='" + this.phone + '\'' +
+        ", address='" + this.address + '\'' +
+        ", birthDate=" + this.birthDate +
         '}';
   }
 }

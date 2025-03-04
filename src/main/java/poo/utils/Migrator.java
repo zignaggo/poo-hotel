@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 public class Migrator {
   private Connection connection;
   private String folderPath;
-  private static final Pattern FOLD_PATTERN = Pattern.compile("^\\d{3,}_[a-z0-9_]+\\.sql$", Pattern.CASE_INSENSITIVE);
+  private static final Pattern FILE_PATTERN = Pattern.compile("^\\d{3,}_[a-z0-9_]+\\.sql$", Pattern.CASE_INSENSITIVE);
   public Migrator(String folderPath, Connection connection) {
     this.connection = connection;
     this.folderPath = folderPath;
@@ -32,7 +32,7 @@ public class Migrator {
       return filenames;
     }
     for (final File fileEntry : files) {
-      if (!fileEntry.isDirectory() && FOLD_PATTERN.matcher(fileEntry.getName()).matches()) {
+      if (!fileEntry.isDirectory() && FILE_PATTERN.matcher(fileEntry.getName()).matches()) {
         filenames.add(fileEntry.getName());
       } else {
         System.out.println("Don't match pattern(ex: 001_anyname.sql): " + fileEntry.getName());
@@ -46,7 +46,7 @@ public class Migrator {
         .execute("CREATE TABLE IF NOT EXISTS __migrations (filename VARCHAR(255), executed_at TIMESTAMP)");
   }
 
-  private String readFile(File file) throws SQLException {
+  private String readFile(File file) throws RuntimeException {
     try {
       Scanner scanner = new Scanner(file);
       String result = "";

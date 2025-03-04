@@ -3,40 +3,32 @@ package poo.domain.entities;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class Reservation {
-  private int id;
-  private Guest guest;
+public class Reservation extends BaseEntity {
+  private String guestCpf;
   private ArrayList<Room> rooms;
   private Date checkIn;
   private Date checkOut;
   private ReservationEnum status;
   private Double amount;
 
-  public Reservation(Guest guest, ArrayList<Room> rooms, Date checkIn, Date checkOut) {
-    this.guest = guest;
-    this.rooms = rooms;
+  public Reservation(int id, String guestCpf, Date checkIn, Date checkOut) {
+    super(id);
+    this.guestCpf = guestCpf;
+    this.rooms = new ArrayList<Room>();
     this.checkIn = checkIn;
     this.checkOut = checkOut;
   }
 
-  public int getId() {
-    return id;
+  public String getGuest() {
+    return this.guestCpf;
   }
 
-  public void setId(int id) {
-    this.id = id;
-  }
-
-  public Guest getGuest() {
-    return guest;
-  }
-
-  public void setGuest(Guest guest) {
-    this.guest = guest;
+  public void setGuest(String guestCpf) {
+    this.guestCpf = guestCpf;
   }
 
   public ArrayList<Room> getRooms() {
-    return rooms;
+    return this.rooms;
   }
 
   public void setRooms(ArrayList<Room> rooms) {
@@ -44,7 +36,7 @@ public class Reservation {
   }
 
   public Date getCheckIn() {
-    return checkIn;
+    return this.checkIn;
   }
 
   public void setCheckIn(Date checkIn) {
@@ -52,7 +44,7 @@ public class Reservation {
   }
 
   public Date getCheckOut() {
-    return checkOut;
+    return this.checkOut;
   }
 
   public void setCheckOut(Date checkOut) {
@@ -60,7 +52,7 @@ public class Reservation {
   }
 
   public ReservationEnum getStatus() {
-    return status;
+    return this.status;
   }
 
   public void setStatus(ReservationEnum status) {
@@ -68,11 +60,22 @@ public class Reservation {
   }
 
   public Double getAmount() {
-    return amount;
+    return this.amount;
   }
 
   public void setAmount(Double amount) {
     this.amount = amount;
   }
 
+  @Override
+  public String toString() {
+    return "Reservation {" +
+        "guestCpf=" + this.guestCpf +
+        ", rooms=" + this.rooms +
+        ", checkIn=" + this.checkIn +
+        ", checkOut=" + this.checkOut +
+        ", status=" + this.status +
+        ", amount=" + this.amount +
+        '}';
+  }
 }
