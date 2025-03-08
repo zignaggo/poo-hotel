@@ -3,6 +3,7 @@ package poo.infra;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Optional;
 
 public abstract class BaseDao<T> {
   private final Connection connection;
@@ -15,8 +16,8 @@ public abstract class BaseDao<T> {
     return connection;
   }
 
-  public abstract T findById(Integer id) throws SQLException;
-  public abstract ArrayList<T> findAll() throws SQLException;
+  public abstract Optional<T> find(Integer id) throws SQLException;
+  public abstract ArrayList<T> find() throws SQLException;
   public abstract void create(T entity) throws SQLException;
   public abstract void update(T entity) throws SQLException;
   public abstract void delete(Integer id) throws SQLException;

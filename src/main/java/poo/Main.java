@@ -16,7 +16,7 @@ public class Main {
             Guest guestToCreate = new Guest("99999999999", "Zignago", "zignago@zignago", "82988776655", "my home", new Date());
             GuestDao guestDao = new GuestDao(connection);
             guestDao.create(guestToCreate);
-            ArrayList<Guest> guests = guestDao.findAll();
+            ArrayList<Guest> guests = guestDao.find();
             for (Guest guest : guests) {
                 System.out.println(guest);
             }

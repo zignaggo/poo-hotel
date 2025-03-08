@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import poo.domain.entities.Guest;
 
@@ -45,12 +46,12 @@ public class GuestDao extends BaseDao<Guest> {
     stmt.execute();
   }
 
-  public Guest findById(Integer id) throws SQLException {
+  public Optional<Guest> find(Integer id) throws SQLException {
     PreparedStatement stmt = this.getConnection().prepareStatement("SELECT * FROM guests WHERE id = ?");
     stmt.setInt(1, id);
     ResultSet rs = stmt.executeQuery();
     if (!rs.next())
-      return null;
+      return Optional.empty();
     Guest guest = new Guest(
         rs.getInt("id"),
         rs.getString("cpf"),
@@ -60,10 +61,10 @@ public class GuestDao extends BaseDao<Guest> {
         rs.getString("address"),
         rs.getDate("birth_date"));
     stmt.close();
-    return guest;
+    return Optional.of(guest);
   }
 
-  public ArrayList<Guest> findAll() throws SQLException {
+  public ArrayList<Guest> find() throws SQLException {
     PreparedStatement stmt = this.getConnection().prepareStatement("SELECT * FROM guests");
     ResultSet rs = stmt.executeQuery();
     ArrayList<Guest> guests = new ArrayList<>();

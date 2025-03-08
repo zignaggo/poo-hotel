@@ -9,21 +9,38 @@ public class Reservation extends BaseEntity {
   private Date checkIn;
   private Date checkOut;
   private ReservationEnum status;
+  private int numberOfGuests;
   private Double amount;
+  private String paymentMethod;
 
-  public Reservation(int id, String guestCpf, Date checkIn, Date checkOut) {
+  public Reservation(String guestCpf, Date checkIn, Date checkOut, ReservationEnum status, int numberOfGuests, Double amount, String paymentMethod) {
+    this.guestCpf = guestCpf;
+    this.rooms = new ArrayList<Room>();
+    this.checkIn = checkIn;
+    this.checkOut = checkOut;
+    this.status = status;
+    this.numberOfGuests = numberOfGuests;
+    this.amount = amount;
+    this.paymentMethod = paymentMethod;
+  }
+
+  public Reservation(int id, String guestCpf, Date checkIn, Date checkOut, ReservationEnum status, int numberOfGuests, Double amount, String paymentMethod) {
     super(id);
     this.guestCpf = guestCpf;
     this.rooms = new ArrayList<Room>();
     this.checkIn = checkIn;
     this.checkOut = checkOut;
+    this.status = status;
+    this.numberOfGuests = numberOfGuests;
+    this.amount = amount;
+    this.paymentMethod = paymentMethod;
   }
 
-  public String getGuest() {
+  public String getGuestCpf() {
     return this.guestCpf;
   }
 
-  public void setGuest(String guestCpf) {
+  public void setGuestCpf(String guestCpf) {
     this.guestCpf = guestCpf;
   }
 
@@ -65,6 +82,22 @@ public class Reservation extends BaseEntity {
 
   public void setAmount(Double amount) {
     this.amount = amount;
+  }
+
+  public int getNumberOfGuests() {
+    return this.numberOfGuests;
+  }
+
+  public void setNumberOfGuests(int numberOfGuests) {
+    this.numberOfGuests = numberOfGuests;
+  }
+
+  public String getPaymentMethod() {
+    return this.paymentMethod;
+  }
+
+  public void setPaymentMethod(String paymentMethod) {
+    this.paymentMethod = paymentMethod;
   }
 
   @Override

@@ -5,10 +5,10 @@ import java.util.ArrayList;
 public class Room extends BaseEntity {
   private int number;
   private int capacity;
-  private int pricePerNight;
+  private double pricePerNight;
   private ArrayList<Integer> beds;
 
-  public Room(int id, int number, int capacity, int pricePerNight) {
+  public Room(int id, int number, int capacity, double pricePerNight) {
     super(id);
     this.number = number;
     this.capacity = capacity;
@@ -24,7 +24,7 @@ public class Room extends BaseEntity {
     this.number = number;
   }
 
-  public int getPricePerNight() {
+  public double getPricePerNight() {
     return this.pricePerNight;
   }
 
@@ -48,7 +48,7 @@ public class Room extends BaseEntity {
     this.beds = beds;
   }
 
-  public int calculatePrice(int nights) {
+  public double calculatePrice(int nights) {
     return this.pricePerNight * nights;
   }
 
