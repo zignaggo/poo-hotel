@@ -14,15 +14,20 @@ public class RoomDao extends BaseDao<Room> {
     super(connection);
   }
 
-  public void create(Room room) throws SQLException {
+  public Room create(Room room) throws SQLException {
     PreparedStatement stmt = this.getConnection().prepareStatement(
-      "INSERT INTO rooms (number, capacity, price_per_night) VALUES (?, ?, ?)"
+      "INSERT INTO rooms (number, capacity, price_per_night) VALUES (?, ?, ?)",
+      PreparedStatement.RETURN_GENERATED_KEYS
     );
     stmt.setInt(1, room.getNumber());
     stmt.setInt(2, room.getCapacity());
     stmt.setDouble(3, room.getPricePerNight());
     stmt.execute();
     stmt.close();
+
+    ResultSet rs = stmt.getGeneratedKeys();
+    room.setId(rs.getInt(1));
+    return room;
   }
 
   public void update(Room room) throws SQLException {
@@ -62,6 +67,24 @@ public class RoomDao extends BaseDao<Room> {
 
   public ArrayList<Room> find() throws SQLException {
     PreparedStatement stmt = this.getConnection().prepareStatement("SELECT * FROM rooms");
+    ResultSet rs = stmt.executeQuery();
+    ArrayList<Room> rooms = new ArrayList<>();
+    while (rs.next())
+      rooms.add(
+        new Room(
+          rs.getInt("id"),
+          rs.getInt("number"),
+          rs.getInt("capacity"),
+          rs.getDouble("price_per_night")
+        )
+      );
+    stmt.close();
+    return rooms;
+  }
+
+  public ArrayList<Room> find(int numberOfGuests) throws SQLException {
+    PreparedStatement stmt = this.getConnection().prepareStatement("SELECT * FROM rooms WHERE capacity >= ?");
+    stmt.setInt(1, numberOfGuests);
     ResultSet rs = stmt.executeQuery();
     ArrayList<Room> rooms = new ArrayList<>();
     while (rs.next())

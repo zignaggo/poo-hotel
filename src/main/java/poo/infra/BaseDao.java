@@ -18,7 +18,7 @@ public abstract class BaseDao<T> {
 
   public abstract Optional<T> find(Integer id) throws SQLException;
   public abstract ArrayList<T> find() throws SQLException;
-  public abstract void create(T entity) throws SQLException;
+  public abstract T create(T entity) throws SQLException;
   public abstract void update(T entity) throws SQLException;
   public abstract void delete(Integer id) throws SQLException;
 }

@@ -15,9 +15,10 @@ public class ReservationDao extends BaseDao<Reservation> {
     super(connection);
   }
 
-  public void create(Reservation reservation) throws SQLException {
+  public Reservation create(Reservation reservation) throws SQLException {
     PreparedStatement stmt = this.getConnection().prepareStatement(
-        "INSERT INTO reservations (guest_cpf, status, amount, number_of_guests, payment_method, check_in_date, check_out_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        "INSERT INTO reservations (guest_cpf, status, amount, number_of_guests, payment_method, check_in_date, check_out_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        PreparedStatement.RETURN_GENERATED_KEYS);
     stmt.setString(1, reservation.getGuestCpf());
     stmt.setString(2, reservation.getStatus().name());
     stmt.setDouble(3, reservation.getAmount());
@@ -27,6 +28,10 @@ public class ReservationDao extends BaseDao<Reservation> {
     stmt.setDate(7, new java.sql.Date(reservation.getCheckOut().getTime()));
     stmt.execute();
     stmt.close();
+
+    ResultSet rs = stmt.getGeneratedKeys();
+    reservation.setId(rs.getInt(1));
+    return reservation;
   }
 
   public void update(Reservation reservation) throws SQLException {

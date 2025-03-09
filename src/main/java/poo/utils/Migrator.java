@@ -15,15 +15,22 @@ public class Migrator {
   private String folderPath;
   private String tableName = "__migrations";
   private static final Pattern FILE_PATTERN = Pattern.compile("^\\d{3,}_[a-z0-9_]+\\.sql$", Pattern.CASE_INSENSITIVE);
-  public Migrator(String folderPath, Connection connection) {
+  
+  public Migrator(Connection connection, String folderPath) {
     this.connection = connection;
     this.folderPath = folderPath;
+  }
+  
+  public Migrator(Connection connection, String folderPath, String tableName) {
+    this.connection = connection;
+    this.folderPath = folderPath;
+    this.tableName = tableName;
   }
 
   public void run() throws SQLException {
     this.runOwnerMigration();
     this.runMigrations();
-    System.out.println("Migrations completed successfully!");
+   Logger.println("Migrations completed successfully!");
   }
 
   private ArrayList<String> listFilesForFolder(final File folder) {
@@ -36,7 +43,7 @@ public class Migrator {
       if (!fileEntry.isDirectory() && FILE_PATTERN.matcher(fileEntry.getName()).matches()) {
         filenames.add(fileEntry.getName());
       } else {
-        System.out.println("Don't match pattern(ex: 001_anyname.sql): " + fileEntry.getName());
+       Logger.println("Don't match pattern(ex: 001_anyname.sql): " + fileEntry.getName());
       }
     }
     return filenames;
@@ -94,7 +101,7 @@ public class Migrator {
           continue;
         }
 
-        System.out.println("Running: " + fileName);
+       Logger.println("Running: " + fileName);
 
         content = "BEGIN TRANSACTION;\n";
         content += readFile(new File(this.folderPath + "/" + fileName));
@@ -107,10 +114,10 @@ public class Migrator {
         
         ranMigrations++;
       } catch (SQLException e) {
-        System.out.printf("Cannot run migration %s\n", fileName);
+       Logger.println("Cannot run migration " + fileName + ": " + e.getMessage());
       }
     }
-    System.out.printf("Ran %s migrations successfully!\n", ranMigrations);
+    Logger.printf("Ran %s migrations successfully!\n", ranMigrations);
   }
   
 }

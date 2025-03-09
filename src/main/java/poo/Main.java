@@ -1,27 +1,72 @@
 package poo;
 
-import poo.domain.entities.Guest;
-import poo.infra.ConnectionFactory;
-import poo.infra.GuestDao;
-import poo.utils.Migrator;
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Date;
+import java.sql.SQLException;
+
+import poo.domain.services.HotelService;
+import poo.infra.ConnectionFactory;
+import poo.utils.Getter;
+import poo.utils.Migrator;
 
 public class Main {
+    static final HotelService hotelService = new HotelService();
+    static final String[] options = {
+            "1. Cadastrar Hospede",
+            "2. Fazer reserva",
+            "3. Listar hospedes",
+            "4. Listar Quartos",
+            "5. Listar Reservas",
+            "6. Limpar terminal",
+            "7. Sair"
+    };
+
+    static final IFunctionality[] methods = {
+            hotelService::createGuest,
+            hotelService::makeReservation,
+            hotelService::listGuests,
+            hotelService::listRooms,
+            hotelService::listReservations,
+            Main::clearScreen,
+    };
+
+    public static void clearScreen(Connection connection, Getter getter) {  
+        System.out.print("\033[H\033[2J");  
+        System.out.flush();
+        System.out.println(hotelService.getLogo());
+    }  
     public static void main(String[] args) {
-        try (Connection connection = ConnectionFactory.getConnection()) {
-            Migrator migrator = new Migrator("./src/migrations", connection);
+        try (Connection connection = ConnectionFactory.getConnection();) {
+            Migrator migrator = new Migrator(connection, "./src/migrations", "__migrations");
+            Migrator seedMigrator = new Migrator(connection, "./src/seeds", "__seeds");
             migrator.run();
-            Guest guestToCreate = new Guest("99999999999", "Zignago", "zignago@zignago", "82988776655", "my home", new Date());
-            GuestDao guestDao = new GuestDao(connection);
-            guestDao.create(guestToCreate);
-            ArrayList<Guest> guests = guestDao.find();
-            for (Guest guest : guests) {
-                System.out.println(guest);
+            seedMigrator.run();
+
+            System.out.println(hotelService.getLogo());
+            Getter getter = new Getter();
+            int option = -1;
+            while (true) {
+                System.out.println("\n\n\n-----------Menu-----------\n" + String.join("\n", options));
+                option = getter.getInt("Choose an option: ");
+
+                if (option > options.length || option < 1) {
+                    System.out.println("Invalid option");
+                    continue;
+                }
+
+                if (option == options.length) {
+                    System.out.println("Bye");
+                    break;
+                }
+
+                methods[option - 1].run(connection, getter);
             }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        } catch (SQLException e) {
+            System.out.println("Cannot connect to the database: " + e.getMessage());
         }
+    }
+
+    @FunctionalInterface
+    public interface IFunctionality {
+        void run(Connection connection, Getter getter);
     }
 }

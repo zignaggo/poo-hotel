@@ -13,7 +13,7 @@ CREATE TYPE movement_type AS ENUM (
 
 CREATE TABLE IF NOT EXISTS guests (
   id SERIAL PRIMARY KEY,
-  cpf CHAR(11) NOT NULL UNIQUE,
+  cpf CHAR(14) NOT NULL UNIQUE,
   full_name VARCHAR(255) NOT NULL,
   email VARCHAR(255) NOT NULL,
   phone CHAR(14) NOT NULL,
@@ -23,8 +23,7 @@ CREATE TABLE IF NOT EXISTS guests (
 
 CREATE TABLE IF NOT EXISTS rooms (
   id SERIAL PRIMARY KEY,
-  number CHAR(10) NOT NULL UNIQUE,
-  type VARCHAR(255) NOT NULL,
+  number INTEGER NOT NULL UNIQUE,
   capacity INTEGER NOT NULL,
   price_per_night DECIMAL(10,2) NOT NULL
 );
@@ -43,8 +42,8 @@ CREATE TABLE IF NOT EXISTS reservations (
 );
 
 CREATE TABLE IF NOT EXISTS reservation_room (
-  reservation_id INTEGER,
-  room_number VARCHAR(255),
+  reservation_id INTEGER NOT NULL,
+  room_number INTEGER NOT NULL,
   FOREIGN KEY (room_number) REFERENCES rooms (number),
   FOREIGN KEY (reservation_id) REFERENCES reservations (id),
   PRIMARY KEY (reservation_id, room_number)

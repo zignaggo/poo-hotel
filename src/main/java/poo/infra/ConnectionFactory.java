@@ -6,9 +6,9 @@ import java.sql.SQLException;
 
 public class ConnectionFactory implements AutoCloseable {
     private static Connection connection = null;
-    private final static String dbUrl = "jdbc:postgresql://localhost:5432/hotel";
-    private final static String user = "postgres";
-    private final static String password = "postgres";
+    private final static String dbUrl = System.getenv("DB_URL").toString().trim();
+    private final static String user = System.getenv("DB_USER").toString().trim();
+    private final static String password = System.getenv("DB_PASSWORD").toString().trim();
 
     public static Connection getConnection() throws SQLException {
         if (connection == null) {
