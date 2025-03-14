@@ -17,7 +17,7 @@ public class ReservationDao extends BaseDao<Reservation> {
 
   public Reservation create(Reservation reservation) throws SQLException {
     PreparedStatement stmt = this.getConnection().prepareStatement(
-        "INSERT INTO reservations (guest_cpf, status, amount, number_of_guests, payment_method, check_in_date, check_out_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        "INSERT INTO reservations (guest_cpf, status, amount, number_of_guests, payment_method, check_in_date, check_out_date) VALUES (?, ?::reservation_status, ?, ?, ?, ?, ?)",
         PreparedStatement.RETURN_GENERATED_KEYS);
     stmt.setString(1, reservation.getGuestCpf());
     stmt.setString(2, reservation.getStatus().name());
@@ -27,10 +27,11 @@ public class ReservationDao extends BaseDao<Reservation> {
     stmt.setDate(6, new java.sql.Date(reservation.getCheckIn().getTime()));
     stmt.setDate(7, new java.sql.Date(reservation.getCheckOut().getTime()));
     stmt.execute();
-    stmt.close();
-
     ResultSet rs = stmt.getGeneratedKeys();
+    if (!rs.next())
+      throw new SQLException("Failed to create reservation");
     reservation.setId(rs.getInt(1));
+    stmt.close();
     return reservation;
   }
 

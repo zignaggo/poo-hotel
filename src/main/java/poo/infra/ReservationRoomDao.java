@@ -15,11 +15,11 @@ public class ReservationRoomDao extends BaseDao<ReservationRoom> {
 
   public ReservationRoom create(ReservationRoom reservationRoom) throws SQLException {
     PreparedStatement stmt = this.getConnection().prepareStatement(
-        "INSERT INTO reservation_room (reservation_id, room_number, amount) VALUES (?, ?, ?)",
+        "INSERT INTO reservation_room (reservation_id, room_id, price) VALUES (?, ?, ?)",
         PreparedStatement.RETURN_GENERATED_KEYS);
     stmt.setInt(1, reservationRoom.getReservationId());
     stmt.setInt(2, reservationRoom.getRoomId());
-    stmt.setDouble(3, reservationRoom.getAmount());
+    stmt.setDouble(3, reservationRoom.getPrice());
     stmt.execute();
     stmt.close();
 

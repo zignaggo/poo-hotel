@@ -39,13 +39,27 @@ public class ReservationService {
   }
 
   public void makeReservation(Getter getter) {
-    System.out.println("Making reservation");
+    System.out.println("\nMaking reservation");
     try {
       GuestDao guestDao = new GuestDao(this.connection);
-      GuestService guestService = new GuestService(guestDao);
-      guestService.list();
-      Guest guest = guestDao.find(getter.getInt("Guest ID: ")).orElse(null);
-      if (guest == null) {
+      ArrayList<Guest> guests = guestDao.find();
+      if (guests.isEmpty()) {
+        System.out.println("No guests found");
+        return;
+      }
+      Guest selectedGuest = null;
+      guests.forEach(guest -> System.out.println(guest.getId() + ": " + guest.getFullName()));
+
+      int guestId = getter.getInt("Guest ID: ");
+
+      for (Guest guest : guests) {
+        if (guest.getId() == guestId) {
+          selectedGuest = guest;
+          break;
+        }
+      }
+
+      if (selectedGuest == null) {
         System.out.println("Guest not found");
         return;
       }
@@ -68,10 +82,9 @@ public class ReservationService {
 
       Room room = rooms.get(0);
       double amount = room.calculatePrice(numberOfGuests);
-
       Reservation reservation = reservationDao.create(
           new Reservation(
-              guest.getCpf(),
+              selectedGuest.getCpf(),
               checkIn,
               checkOut,
               ReservationEnum.OPENED,

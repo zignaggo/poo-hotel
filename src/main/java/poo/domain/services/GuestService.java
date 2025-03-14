@@ -18,7 +18,7 @@ public class GuestService {
     this.guestDao = guestDao;
   }
 
-  public void list() throws SQLException {
+  public void list() throws SQLException{
     ArrayList<Guest> guests = guestDao.find();
     if (guests.isEmpty()) {
       System.out.println("No guests found");

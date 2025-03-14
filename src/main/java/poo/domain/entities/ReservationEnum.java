@@ -2,6 +2,7 @@ package poo.domain.entities;
 
 public enum ReservationEnum {
   OPENED,
-  CLOSED,
-  CANCELED
+  IN_PROGRESS,
+  CANCELED,
+  FINISHED
 }

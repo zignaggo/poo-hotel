@@ -2,13 +2,14 @@ DROP TYPE IF EXISTS reservation_status;
 DROP TYPE IF EXISTS movement_type;
 
 CREATE TYPE reservation_status AS ENUM (
-  'in_progress',
-  'cancelled',
-  'finished'
+  'OPENED',
+  'IN_PROGRESS',
+  'CANCELLED',
+  'FINISHED'
 );
 CREATE TYPE movement_type AS ENUM (
-  'check_in',
-  'check_out'
+  'CHECK_IN',
+  'CHECK_OUT'
 );
 
 CREATE TABLE IF NOT EXISTS guests (
@@ -30,7 +31,7 @@ CREATE TABLE IF NOT EXISTS rooms (
 
 CREATE TABLE IF NOT EXISTS reservations (
   id SERIAL PRIMARY KEY,
-  guest_cpf CHAR(11) NOT NULL,
+  guest_cpf CHAR(14) NOT NULL,
   status reservation_status NOT NULL,
   amount DECIMAL(10,2) DEFAULT 0,
   lunch BOOLEAN DEFAULT FALSE,
@@ -43,10 +44,11 @@ CREATE TABLE IF NOT EXISTS reservations (
 
 CREATE TABLE IF NOT EXISTS reservation_room (
   reservation_id INTEGER NOT NULL,
-  room_number INTEGER NOT NULL,
-  FOREIGN KEY (room_number) REFERENCES rooms (number),
+  room_id INTEGER NOT NULL,
+  price DECIMAL(10,2) NOT NULL,
+  FOREIGN KEY (room_id) REFERENCES rooms (id),
   FOREIGN KEY (reservation_id) REFERENCES reservations (id),
-  PRIMARY KEY (reservation_id, room_number)
+  PRIMARY KEY (reservation_id, room_id)
 );
 
 CREATE TABLE IF NOT EXISTS movements (
