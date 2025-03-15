@@ -7,8 +7,13 @@ import java.util.Locale;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
-public class Getter {
-  Scanner scanner = new Scanner(System.in);
+public class Getter implements AutoCloseable {
+  Scanner scanner;
+
+  public Getter() {
+    this.scanner = new Scanner(System.in);
+    this.scanner.useDelimiter("\n");
+  }
 
   public void close() {
     this.scanner.close();
@@ -42,16 +47,17 @@ public class Getter {
 
   public String getString(String message) {
     System.out.println(message);
-    String value = this.scanner.next().trim();
-    this.scanner.nextLine();
+    this.scanner.skip("\\R?");
+    String value = this.scanner.nextLine().trim();
     return value;
   }
 
   public String getString(String message, String regex) {
     Pattern pattern = Pattern.compile(regex);
     System.out.println(message);
-    String value = this.scanner.next().trim();
-    this.scanner.nextLine();
+    // https://stackoverflow.com/questions/7946664/scanner-only-reads-first-word-instead-of-line
+    this.scanner.skip("\\R?");
+    String value = this.scanner.nextLine().trim();
     if (!pattern.matcher(value).matches()) {
       System.out.println("String doesn't match the pattern\n");
       return this.getString(message, regex);
@@ -62,8 +68,8 @@ public class Getter {
   public String getString(String message, String regex, String errorMessage) {
     Pattern pattern = Pattern.compile(regex);
     System.out.println(message);
-    String value = this.scanner.next().trim();
-    this.scanner.nextLine();
+    this.scanner.skip("\\R?");
+    String value = this.scanner.nextLine().trim();
     if (!pattern.matcher(value).matches()) {
       System.out.println(errorMessage);
       return this.getString(message, regex, errorMessage);
@@ -83,4 +89,5 @@ public class Getter {
       return this.getDate(message);
     }
   }
+  
 }

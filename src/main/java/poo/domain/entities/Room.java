@@ -5,15 +5,17 @@ import java.util.ArrayList;
 public class Room extends BaseEntity {
   private int number;
   private int capacity;
+  private String roomType;
   private double pricePerNight;
   private ArrayList<Integer> beds;
 
-  public Room(int id, int number, int capacity, double pricePerNight) {
+  public Room(int id, int number, int capacity, double pricePerNight, String roomType) {
     super(id);
     this.number = number;
     this.capacity = capacity;
     this.pricePerNight = pricePerNight;
     this.beds = new ArrayList<Integer>();
+    this.roomType = roomType;
   }
 
   public int getNumber() {
@@ -56,6 +58,14 @@ public class Room extends BaseEntity {
     return numberOfPeople <= this.capacity;
   }
 
+  public String getRoomType() {
+    return this.roomType;
+  }
+
+  public void setRoomType(String roomType) {
+    this.roomType = roomType;
+  }
+  
   @Override
   public String toString() {
     return "Room {" +

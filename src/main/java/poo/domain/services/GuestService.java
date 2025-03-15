@@ -7,9 +7,11 @@ import java.util.Date;
 import java.util.Optional;
 
 import poo.domain.entities.Guest;
-import poo.domain.expections.AlreadyExistsGuest;
+import poo.domain.expections.GuestException;
 import poo.infra.GuestDao;
-import poo.utils.Getter;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
 
 public class GuestService {
   private GuestDao guestDao;
@@ -18,32 +20,36 @@ public class GuestService {
     this.guestDao = guestDao;
   }
 
-  public void list() throws SQLException{
-    ArrayList<Guest> guests = guestDao.find();
-    if (guests.isEmpty()) {
-      System.out.println("No guests found");
-      return;
-    }
-    guests.forEach(guest -> System.out.println(guest.toString()));
+  public GuestService(Connection connection) {
+    this.guestDao = new GuestDao(connection);
   }
 
-  public void create(Connection connection, Getter getter) throws AlreadyExistsGuest, SQLException {
-    System.out.println("Creating guest\n");
-    GuestDao guestDao = new GuestDao(connection);
-    String name = getter.getString("Name: ");
-    String cpf = getter.getString("CPF: ", "^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$", "Invalid CPF");
-    Optional<Guest> existingGuest = guestDao.find(cpf);
-    System.out.println(existingGuest.toString());
-    if (existingGuest.isPresent()) {
-      throw new AlreadyExistsGuest(name, cpf);
+  public ArrayList<Guest> getAllGuests() throws GuestException {
+    try {
+      return guestDao.find();
+    } catch (SQLException e) {
+      throw new GuestException("Failed to retrieve guests: " + e.getMessage());
     }
-    String email = getter.getString("Email: ", "^\\w+@\\w+\\.\\w+$", "Invalid email");
-    String phone = getter.getString("Phone: ", "^\\d{2}\\d{4}-\\d{4}$", "Invalid phone");
-    String address = getter.getString("Address: ");
-    Date birthDate = getter.getDate("Birth date: ");
-    Guest guest = new Guest(cpf, name, email, phone, address, birthDate);
-    guestDao.create(guest);
-    System.out.println("Guest created successfully\n");
-    System.out.println(guest.toString());
+  }
+
+  private boolean isGuest18YearsOld(Date birthDate) {
+    LocalDate birthLocalDate = birthDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    LocalDate now = LocalDate.now();
+    int age = Period.between(birthLocalDate, now).getYears();
+    return age >= 18;
+  }
+
+  public Guest create(String name, String cpf, String email, String phone, String address,
+    Date birthDate) throws SQLException, GuestException {
+    Optional<Guest> existingGuest = guestDao.find(cpf);
+    if (!isGuest18YearsOld(birthDate)) {
+      throw new GuestException("Guest must be at least 18 years old");
+    }
+
+    if (existingGuest.isPresent()) {
+      Guest guest = existingGuest.get();
+      throw new GuestException("Guest already exists: " + guest.getFullName() + " (" + guest.getCpf() + ")");
+    }
+    return guestDao.create(new Guest(cpf, name, email, phone, address, birthDate));
   }
 }

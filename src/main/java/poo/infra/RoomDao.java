@@ -7,7 +7,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import poo.domain.entities.DeluxeRoom;
 import poo.domain.entities.Room;
+import poo.domain.entities.RoomFactory;
 
 public class RoomDao extends BaseDao<Room> {
   public RoomDao(Connection connection) {
@@ -16,12 +18,20 @@ public class RoomDao extends BaseDao<Room> {
 
   public Room create(Room room) throws SQLException {
     PreparedStatement stmt = this.getConnection().prepareStatement(
-      "INSERT INTO rooms (number, capacity, price_per_night) VALUES (?, ?, ?)",
-      PreparedStatement.RETURN_GENERATED_KEYS
-    );
+        "INSERT INTO rooms (number, capacity, price_per_night, room_type, has_jacuzzi) VALUES (?, ?, ?, ?, ?)",
+        PreparedStatement.RETURN_GENERATED_KEYS);
     stmt.setInt(1, room.getNumber());
     stmt.setInt(2, room.getCapacity());
     stmt.setDouble(3, room.getPricePerNight());
+    stmt.setString(4, room.getRoomType());
+
+    if (room instanceof DeluxeRoom) {
+      DeluxeRoom deluxeRoom = (DeluxeRoom) room;
+      stmt.setBoolean(5, deluxeRoom.hasJacuzzi());
+    } else {
+      stmt.setBoolean(5, false);
+    }
+   
     stmt.execute();
     stmt.close();
 
@@ -32,12 +42,13 @@ public class RoomDao extends BaseDao<Room> {
 
   public void update(Room room) throws SQLException {
     PreparedStatement stmt = this.getConnection().prepareStatement(
-      "UPDATE rooms SET number = ?, capacity = ?, price_per_night = ? WHERE id = ?"
-    );
+        "UPDATE rooms SET number = ?, capacity = ?, price_per_night = ?, room_type = ?, has_jacuzzi = ? WHERE id = ?");
     stmt.setInt(1, room.getNumber());
     stmt.setInt(2, room.getCapacity());
     stmt.setDouble(3, room.getPricePerNight());
-    stmt.setInt(4, room.getId());
+    stmt.setString(4, room.getRoomType());
+    stmt.setBoolean(5, room instanceof DeluxeRoom ? ((DeluxeRoom) room).hasJacuzzi() : false);
+    stmt.setInt(6, room.getId());
     stmt.execute();
     stmt.close();
   }
@@ -55,12 +66,15 @@ public class RoomDao extends BaseDao<Room> {
     ResultSet rs = stmt.executeQuery();
     if (!rs.next())
       return Optional.empty();
-    Room room = new Room(
-      rs.getInt("id"),
-      rs.getInt("number"),
-      rs.getInt("capacity"),
-      rs.getDouble("price_per_night")
-    );
+
+    Room room = RoomFactory.create(
+        rs.getString("room_type"),
+        rs.getInt("id"),
+        rs.getInt("number"),
+        rs.getInt("capacity"),
+        rs.getDouble("price_per_night"),
+        rs.getBoolean("has_jacuzzi"),
+        rs.getBoolean("has_room_service"));
     stmt.close();
     return Optional.of(room);
   }
@@ -71,13 +85,14 @@ public class RoomDao extends BaseDao<Room> {
     ArrayList<Room> rooms = new ArrayList<>();
     while (rs.next())
       rooms.add(
-        new Room(
-          rs.getInt("id"),
-          rs.getInt("number"),
-          rs.getInt("capacity"),
-          rs.getDouble("price_per_night")
-        )
-      );
+          RoomFactory.create(
+              rs.getString("room_type"),
+              rs.getInt("id"),
+              rs.getInt("number"),
+              rs.getInt("capacity"),
+              rs.getDouble("price_per_night"),
+              rs.getBoolean("has_jacuzzi"),
+              rs.getBoolean("has_room_service")));
     stmt.close();
     return rooms;
   }
@@ -89,13 +104,14 @@ public class RoomDao extends BaseDao<Room> {
     ArrayList<Room> rooms = new ArrayList<>();
     while (rs.next())
       rooms.add(
-        new Room(
-          rs.getInt("id"),
-          rs.getInt("number"),
-          rs.getInt("capacity"),
-          rs.getDouble("price_per_night")
-        )
-      );
+          RoomFactory.create(
+              rs.getString("room_type"),
+              rs.getInt("id"),
+              rs.getInt("number"),
+              rs.getInt("capacity"),
+              rs.getDouble("price_per_night"),
+              rs.getBoolean("has_jacuzzi"),
+              rs.getBoolean("has_room_service")));
     stmt.close();
     return rooms;
   }
