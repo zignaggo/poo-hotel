@@ -65,4 +65,7 @@ public class HotelService {
     ReservationService reservationService = new ReservationService(reservationDao, connection);
     reservationService.list();
   }
+
+  public void makeCheckin(Connection connection, Getter getter) {}
+  public void makeCheckout(Connection connection, Getter getter) {}
 }

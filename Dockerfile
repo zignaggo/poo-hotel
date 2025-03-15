@@ -14,6 +14,7 @@ ENV DB_PASSWORD="postgres"
 
 COPY --from=build app/target/hotel-1.0-SNAPSHOT.jar app.jar
 COPY ./src/migrations/001_anya_forger.sql /src/migrations/001_anya_forger.sql
+COPY logo.txt .
 
 EXPOSE 5432
 

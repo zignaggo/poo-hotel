@@ -1,11 +1,17 @@
 services:
   app-java:
-    image: hotel-java-app:0.0.1
-    container_name: hotel
+    build: .
+    # image: hotel-java:0.0.1
+    container_name: app
+    stdin_open: true
+    tty: true
     environment:
       DB_URL: "jdbc:postgresql://postgres:5432/hotel"
       DB_USER: "postgres"
       DB_PASSWORD: "postgres"
+      TERM: "${TERM:-xterm-256color}"
+    networks:
+      - hotel_network
     depends_on:
       - postgres
   postgres:
@@ -18,3 +24,9 @@ services:
       POSTGRES_PASSWORD: "postgres"
     ports:
       - "5432:5432"
+    networks:
+      - hotel_network
+
+networks:
+  hotel_network:
+    name: hotel_default

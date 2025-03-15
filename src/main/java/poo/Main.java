@@ -16,8 +16,10 @@ public class Main {
             "3. Listar hospedes",
             "4. Listar Quartos",
             "5. Listar Reservas",
-            "6. Limpar terminal",
-            "7. Sair"
+            "6. Fazer Checkin",
+            "7. Fazer Checkout",
+            "8. Limpar terminal",
+            "9. Sair",
     };
 
     static final IFunctionality[] methods = {
@@ -26,15 +28,19 @@ public class Main {
             hotelService::listGuests,
             hotelService::listRooms,
             hotelService::listReservations,
+            hotelService::makeCheckin,
+            hotelService::makeCheckout,
             Main::clearScreen,
     };
 
-    public static void clearScreen(Connection connection, Getter getter) {  
-        System.out.print("\033[H\033[2J");  
+    public static void clearScreen(Connection connection, Getter getter) {
+        System.out.print("\033[H\033[2J");
         System.out.flush();
         System.out.println(hotelService.getLogo());
-    }  
+    }
+
     public static void main(String[] args) {
+
         try (Connection connection = ConnectionFactory.getConnection();) {
             Migrator migrator = new Migrator(connection, "./src/migrations", "__migrations");
             Migrator seedMigrator = new Migrator(connection, "./src/seeds", "__seeds");
