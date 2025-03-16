@@ -23,7 +23,7 @@ public class MovementDao extends BaseDao<Movement> {
 		stmt.setString(1, movements.getType().name());
 		stmt.setInt(2, movements.getReservationId());
 		stmt.setDouble(3, movements.getAmount());
-		stmt.setDate(4, new java.sql.Date(movements.getDate().getTime()));
+		stmt.setTimestamp(4, new java.sql.Timestamp(movements.getDate().getTime()));
 		stmt.execute();
 
 		ResultSet rs = stmt.getGeneratedKeys();
@@ -40,7 +40,7 @@ public class MovementDao extends BaseDao<Movement> {
 		stmt.setString(1, movements.getType().name());
 		stmt.setInt(2, movements.getReservationId());
 		stmt.setDouble(3, movements.getAmount());
-		stmt.setDate(4, new java.sql.Date(movements.getDate().getTime()));
+		stmt.setTimestamp(4, new java.sql.Timestamp(movements.getDate().getTime()));
 		stmt.setInt(5, movements.getId());
 		stmt.execute();
 		stmt.close();
@@ -63,7 +63,7 @@ public class MovementDao extends BaseDao<Movement> {
 				rs.getInt("id"),
 				rs.getInt("reservation_id"),
 				MovementEnum.valueOf(rs.getString("type")),
-				rs.getDate("date"),
+				rs.getTimestamp("date"),
 				rs.getDouble("amount")));
 		stmt.close();
 		return movement;
@@ -80,7 +80,7 @@ public class MovementDao extends BaseDao<Movement> {
 			rs.getInt("id"),
 			rs.getInt("reservation_id"),
 			MovementEnum.valueOf(rs.getString("type")),
-			rs.getDate("date"),
+			rs.getTimestamp("date"),
 			rs.getDouble("amount")));
 		stmt.close();
 		return movement;
@@ -95,7 +95,7 @@ public class MovementDao extends BaseDao<Movement> {
 					rs.getInt("id"),
 					rs.getInt("reservation_id"),
 					MovementEnum.valueOf(rs.getString("type")),
-					rs.getDate("date"),
+					rs.getTimestamp("date"),
 					rs.getDouble("amount")));
 		stmt.close();
 		return movements;

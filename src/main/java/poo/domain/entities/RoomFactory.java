@@ -8,7 +8,7 @@ public class RoomFactory {
         return new DeluxeRoom(id, number, capacity, pricePerNight, false);
     }
 
-    public static Room create(String type, int id, int number, int capacity, double pricePerNight, boolean hasJacuzzi, boolean hasRoomService) {
+    public static Room create(String type, int id, int number, int capacity, double pricePerNight, boolean hasJacuzzi) {
         if (type.equals("STANDARD")) {
             return new StandardRoom(id, number, capacity, pricePerNight);
         }

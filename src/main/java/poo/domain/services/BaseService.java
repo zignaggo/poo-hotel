@@ -12,7 +12,7 @@ interface TransactionFunction<R, P> {
 	R apply(P param) throws SQLException;
 }
 
-public class BaseService {
+public abstract class BaseService {
 	private final Connection connection;
 
 	public BaseService(Connection connection) {

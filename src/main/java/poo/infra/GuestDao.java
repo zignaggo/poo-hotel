@@ -24,7 +24,7 @@ public class GuestDao extends BaseDao<Guest> {
     stmt.setString(3, guest.getEmail());
     stmt.setString(4, guest.getPhone());
     stmt.setString(5, guest.getAddress());
-    stmt.setDate(6, new java.sql.Date(guest.getBirthDate().getTime()));
+    stmt.setTimestamp(6, new java.sql.Timestamp(guest.getBirthDate().getTime()));
     stmt.execute();
     
     ResultSet rs = stmt.getGeneratedKeys();
@@ -67,7 +67,7 @@ public class GuestDao extends BaseDao<Guest> {
         rs.getString("email"),
         rs.getString("phone"),
         rs.getString("address"),
-        rs.getDate("birth_date"));
+        rs.getTimestamp("birth_date"));
     stmt.close();
     return Optional.of(guest);
   }
@@ -85,7 +85,7 @@ public class GuestDao extends BaseDao<Guest> {
         rs.getString("email"),
         rs.getString("phone"),
         rs.getString("address"),
-        rs.getDate("birth_date"));
+        rs.getTimestamp("birth_date"));
     stmt.close();
     return Optional.of(guest);
   }
@@ -103,7 +103,7 @@ public class GuestDao extends BaseDao<Guest> {
               rs.getString("email"),
               rs.getString("phone"),
               rs.getString("address"),
-              rs.getDate("birth_date")));
+              rs.getTimestamp("birth_date")));
     stmt.close();
     return guests;
   }
@@ -129,7 +129,7 @@ public class GuestDao extends BaseDao<Guest> {
               rs.getString("email"),
               rs.getString("phone"),
               rs.getString("address"),
-              rs.getDate("birth_date"),
+              rs.getTimestamp("birth_date"),
               rs.getInt("reservation_count")));
     stmt.close();
     return guests;

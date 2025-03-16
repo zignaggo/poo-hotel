@@ -65,6 +65,8 @@ CREATE TABLE IF NOT EXISTS movements (
 CREATE TABLE IF NOT EXISTS items (
   id SERIAL PRIMARY KEY,
   type VARCHAR(255) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  description VARCHAR(512) NOT NULL,
   available_quantity INTEGER NOT NULL,
   price DECIMAL(10,2) NOT NULL
 );
@@ -72,16 +74,15 @@ CREATE TABLE IF NOT EXISTS items (
 CREATE TABLE IF NOT EXISTS consumptions (
   id SERIAL PRIMARY KEY,
   reservation_id INTEGER,
-  item_id INTEGER,
   date TIMESTAMP NOT NULL,
-  FOREIGN KEY (reservation_id) REFERENCES reservations (id),
-  FOREIGN KEY (item_id) REFERENCES items (id)
+  FOREIGN KEY (reservation_id) REFERENCES reservations (id)
 );
 
 CREATE TABLE IF NOT EXISTS consumptions_item (
   consumption_id SERIAL,
   item_id INTEGER,
-  date TIMESTAMP NOT NULL,
+  price DECIMAL(10,2) NOT NULL,
+  quantity INTEGER NOT NULL,
   FOREIGN KEY (consumption_id) REFERENCES consumptions (id),
   FOREIGN KEY (item_id) REFERENCES items (id),
   PRIMARY KEY(consumption_id, item_id)

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import poo.domain.entities.Guest;
+import poo.domain.entities.Item;
 import poo.domain.entities.Reservation;
 import poo.domain.entities.Room;
 import poo.utils.Getter;
@@ -21,23 +22,27 @@ public class HotelService {
 
   private final String[] options = {
       "1. Cadastrar Hospede",
-      "2. Fazer reserva",
-      "3. Listar hospedes",
-      "4. Listar Quartos",
-      "5. Listar Reservas",
-      "6. Fazer Checkin",
-      "7. Fazer Checkout",
-      "8. Sair",
+      "2. Fazer Reserva",
+      "3. Fazer Checkin",
+      "4. Fazer Checkout",
+      "5. Fazer Pedido",
+      "6. Listar Hospedes",
+      "7. Listar Quartos",
+      "8. Listar Reservas",
+      "9. Listar Itens",
+      "10. Sair",
   };
 
   private final IFunctionality[] methods = {
       this::createGuest,
       this::makeReservation,
+      this::makeCheckIn,
+      this::makeCheckOut,
+      this::makeOrder,
       this::listGuests,
       this::listRooms,
       this::listReservations,
-      this::makeCheckIn,
-      this::makeCheckOut,
+      this::listItems,
   };
 
   public void start() {
@@ -193,6 +198,25 @@ public class HotelService {
       System.out.println("Check-out completed successfully");
     } catch (Exception e) {
       System.out.println("Failed to list reservations: " + e.getMessage());
+    }
+  }
+
+  public void makeOrder() {
+    System.out.println("Making order: Not implemented yet\n");
+  }
+
+  public void listItems() {
+    ItemService itemService = new ItemService(connection);
+    try {
+      ArrayList<Item> items = itemService.getAllItems();
+      if (items.isEmpty()) {
+        System.out.println("No items found");
+        return;
+      }
+      System.out.printf("Listing %d items:\n", items.size());
+      items.forEach(item -> System.out.println(item.toString()));
+    } catch (Exception e) {
+      System.out.println("Failed to list items: " + e.getMessage());
     }
   }
 

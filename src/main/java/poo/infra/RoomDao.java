@@ -73,14 +73,13 @@ public class RoomDao extends BaseDao<Room> {
         rs.getInt("number"),
         rs.getInt("capacity"),
         rs.getDouble("price_per_night"),
-        rs.getBoolean("has_jacuzzi"),
-        rs.getBoolean("has_room_service"));
+        rs.getBoolean("has_jacuzzi"));
     stmt.close();
     return Optional.of(room);
   }
 
   public ArrayList<Room> find() throws SQLException {
-    PreparedStatement stmt = this.getConnection().prepareStatement("SELECT * FROM rooms");
+    PreparedStatement stmt = this.getConnection().prepareStatement("SELECT * FROM rooms ORDER BY number");
     ResultSet rs = stmt.executeQuery();
     ArrayList<Room> rooms = new ArrayList<>();
     while (rs.next())
@@ -91,14 +90,13 @@ public class RoomDao extends BaseDao<Room> {
               rs.getInt("number"),
               rs.getInt("capacity"),
               rs.getDouble("price_per_night"),
-              rs.getBoolean("has_jacuzzi"),
-              rs.getBoolean("has_room_service")));
+              rs.getBoolean("has_jacuzzi")));
     stmt.close();
     return rooms;
   }
 
   public ArrayList<Room> find(int numberOfGuests) throws SQLException {
-    PreparedStatement stmt = this.getConnection().prepareStatement("SELECT * FROM rooms WHERE capacity >= ?");
+    PreparedStatement stmt = this.getConnection().prepareStatement("SELECT * FROM rooms WHERE capacity >= ? ORDER BY number");
     stmt.setInt(1, numberOfGuests);
     ResultSet rs = stmt.executeQuery();
     ArrayList<Room> rooms = new ArrayList<>();
@@ -110,8 +108,8 @@ public class RoomDao extends BaseDao<Room> {
               rs.getInt("number"),
               rs.getInt("capacity"),
               rs.getDouble("price_per_night"),
-              rs.getBoolean("has_jacuzzi"),
-              rs.getBoolean("has_room_service")));
+              rs.getBoolean("has_jacuzzi")
+              ));
     stmt.close();
     return rooms;
   }

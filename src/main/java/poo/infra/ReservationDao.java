@@ -25,8 +25,8 @@ public class ReservationDao extends BaseDao<Reservation> {
     stmt.setDouble(3, reservation.getAmount());
     stmt.setInt(4, reservation.getNumberOfGuests());
     stmt.setString(5, reservation.getPaymentMethod());
-    stmt.setDate(6, new java.sql.Date(reservation.getCheckIn().getTime()));
-    stmt.setDate(7, new java.sql.Date(reservation.getCheckOut().getTime()));
+    stmt.setTimestamp(6, new java.sql.Timestamp(reservation.getCheckIn().getTime()));
+    stmt.setTimestamp(7, new java.sql.Timestamp(reservation.getCheckOut().getTime()));
     stmt.execute();
     ResultSet rs = stmt.getGeneratedKeys();
     if (!rs.next())
@@ -44,8 +44,8 @@ public class ReservationDao extends BaseDao<Reservation> {
     stmt.setDouble(3, reservation.getAmount());
     stmt.setInt(4, reservation.getNumberOfGuests());
     stmt.setString(5, reservation.getPaymentMethod());
-    stmt.setDate(6, new java.sql.Date(reservation.getCheckIn().getTime()));
-    stmt.setDate(7, new java.sql.Date(reservation.getCheckOut().getTime()));
+    stmt.setTimestamp(6, new java.sql.Timestamp(reservation.getCheckIn().getTime()));
+    stmt.setTimestamp(7, new java.sql.Timestamp(reservation.getCheckOut().getTime()));
     stmt.setInt(8, reservation.getId());
     stmt.execute();
     stmt.close();
@@ -67,8 +67,8 @@ public class ReservationDao extends BaseDao<Reservation> {
     Reservation reservation = new Reservation(
         rs.getInt("id"),
         rs.getString("guest_cpf"),
-        rs.getDate("check_in_date"),
-        rs.getDate("check_out_date"),
+        rs.getTimestamp("check_in_date"),
+        rs.getTimestamp("check_out_date"),
         ReservationEnum.valueOf(rs.getString("status")),
         rs.getInt("number_of_guests"),
         rs.getDouble("amount"),
@@ -78,7 +78,7 @@ public class ReservationDao extends BaseDao<Reservation> {
   }
 
   public ArrayList<Reservation> find() throws SQLException {
-    PreparedStatement stmt = this.getConnection().prepareStatement("SELECT * FROM reservations");
+    PreparedStatement stmt = this.getConnection().prepareStatement("SELECT * FROM reservations ORDER BY id");
     ResultSet rs = stmt.executeQuery();
     ArrayList<Reservation> reservations = new ArrayList<>();
     while (rs.next())
@@ -86,8 +86,8 @@ public class ReservationDao extends BaseDao<Reservation> {
           new Reservation(
               rs.getInt("id"),
               rs.getString("guest_cpf"),
-              rs.getDate("check_in_date"),
-              rs.getDate("check_out_date"),
+              rs.getTimestamp("check_in_date"),
+              rs.getTimestamp("check_out_date"),
               ReservationEnum.valueOf(rs.getString("status")),
               rs.getInt("number_of_guests"),
               rs.getDouble("amount"),
@@ -116,6 +116,7 @@ public class ReservationDao extends BaseDao<Reservation> {
                 g.birth_date guest_birth_date
               FROM reservations r
               LEFT JOIN guests g ON g.cpf = r.guest_cpf
+              ORDER BY r.id
             """);
     ResultSet rs = stmt.executeQuery();
     ArrayList<Reservation> reservations = new ArrayList<>();
@@ -124,8 +125,8 @@ public class ReservationDao extends BaseDao<Reservation> {
           new Reservation(
               rs.getInt("id"),
               rs.getString("guest_cpf"),
-              rs.getDate("check_in_date"),
-              rs.getDate("check_out_date"),
+              rs.getTimestamp("check_in_date"),
+              rs.getTimestamp("check_out_date"),
               ReservationEnum.valueOf(rs.getString("status")),
               rs.getInt("number_of_guests"),
               rs.getDouble("amount"),
