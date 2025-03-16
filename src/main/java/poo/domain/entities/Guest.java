@@ -9,6 +9,7 @@ public class Guest extends BaseEntity {
   private String phone;
   private String address;
   private Date birthDate;
+  private int numberOfReservations = 0;
 
   public Guest(String cpf, String fullName, String email, String phone, String address, Date birthDate) {
     this.cpf = cpf;
@@ -29,6 +30,17 @@ public class Guest extends BaseEntity {
     this.birthDate = birthDate;
   }
 
+  public Guest(int id, String cpf, String fullName, String email, String phone, String address, Date birthDate,
+      int numberOfReservations) {
+    super(id);
+    this.cpf = cpf;
+    this.fullName = fullName;
+    this.email = email;
+    this.phone = phone;
+    this.address = address;
+    this.birthDate = birthDate;
+    this.numberOfReservations = numberOfReservations;
+  }
 
   public String getCpf() {
     return this.cpf;
@@ -78,16 +90,34 @@ public class Guest extends BaseEntity {
     this.birthDate = birthDate;
   }
 
+  public int getNumberOfReservations() {
+    return this.numberOfReservations;
+  }
+
+  public void setNumberOfReservations(int numberOfReservations) {
+    this.numberOfReservations = numberOfReservations;
+  }
+
   @Override
   public String toString() {
-    return "Guest {" +
-        "cpf='" + this.cpf + '\'' +
-        ", id='" + this.getId() + '\'' +
-        ", fullName='" + this.fullName + '\'' +
-        ", email='" + this.email + '\'' +
-        ", phone='" + this.phone + '\'' +
-        ", address='" + this.address + '\'' +
-        ", birthDate=" + this.birthDate +
-        '}';
+    return String.format("""
+        |-------- Guest #%d --------|
+        | CPF: %s
+        | Full Name: %s
+        | Email: %s
+        | Phone: %s
+        | Address: %s
+        | Birth Date: %s
+        | Number of Reservations: %d
+        |---------------------------|
+                """,
+        this.getId(),
+        this.cpf,
+        this.fullName,
+        this.email,
+        this.phone,
+        this.address,
+        this.birthDate,
+        this.numberOfReservations);
   }
 }

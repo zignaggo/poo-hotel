@@ -68,11 +68,18 @@ public class Room extends BaseEntity {
   
   @Override
   public String toString() {
-    return "Room {" +
-        "id=" + this.getId() +
-        ", number=" + this.number +
-        ", capacity=" + this.capacity +
-        ", pricePerNight=" + this.pricePerNight +
-        '}';
+    return String.format("""
+        |-------------Room %d-------------|
+        | Number: %d
+        | Capacity: %d
+        | Price per night: %.2f
+        | Room type: %s
+        |---------------------------------|
+                """,
+        this.getId(),
+        this.number,
+        this.capacity,
+        this.pricePerNight,
+        this.roomType);
   }
 }

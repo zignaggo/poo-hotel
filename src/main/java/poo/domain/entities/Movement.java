@@ -2,14 +2,20 @@ package poo.domain.entities;
 
 import java.util.Date;
 
-public class Movements extends BaseEntity{ 
+public class Movement extends BaseEntity{ 
   private int reservationId;
-  private MovementsEnum type;
+  private MovementEnum type;
   private Date date;
   private Double amount;
 
-  public Movements(int id, int reservationId, MovementsEnum type, Date date, Double amount) {
+  public Movement(int id, int reservationId, MovementEnum type, Date date, Double amount) {
     super(id);
+    this.reservationId = reservationId;
+    this.type = type;
+    this.date = date;
+    this.amount = amount;
+  }
+  public Movement(int reservationId, MovementEnum type, Date date, Double amount) {
     this.reservationId = reservationId;
     this.type = type;
     this.date = date;
@@ -24,11 +30,11 @@ public class Movements extends BaseEntity{
     this.reservationId = reservationId;
   }
 
-  public MovementsEnum getType() {
+  public MovementEnum getType() {
     return this.type;
   }
 
-  public void setType(MovementsEnum type) {
+  public void setType(MovementEnum type) {
     this.type = type;
   }
 

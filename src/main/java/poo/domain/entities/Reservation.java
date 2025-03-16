@@ -12,6 +12,20 @@ public class Reservation extends BaseEntity {
   private int numberOfGuests;
   private Double amount;
   private String paymentMethod;
+  private Guest guest;
+
+  public Reservation(int id, String guestCpf, Date checkIn, Date checkOut, ReservationEnum status, int numberOfGuests, Double amount, String paymentMethod, Guest guest) {
+    super(id);
+    this.guestCpf = guestCpf;
+    this.rooms = new ArrayList<Room>();
+    this.checkIn = checkIn;
+    this.checkOut = checkOut;
+    this.status = status;
+    this.numberOfGuests = numberOfGuests;
+    this.amount = amount;
+    this.paymentMethod = paymentMethod;
+    this.guest = guest;
+  }
 
   public Reservation(String guestCpf, Date checkIn, Date checkOut, ReservationEnum status, int numberOfGuests, Double amount, String paymentMethod) {
     this.guestCpf = guestCpf;
@@ -100,15 +114,37 @@ public class Reservation extends BaseEntity {
     this.paymentMethod = paymentMethod;
   }
 
+  public Guest getGuest() {
+    return this.guest;
+  }
+
+  public void setGuest(Guest guest) {
+    this.guest = guest;
+  }
+
   @Override
   public String toString() {
-    return "Reservation {" +
-        "guestCpf=" + this.guestCpf +
-        ", rooms=" + this.rooms +
-        ", checkIn=" + this.checkIn +
-        ", checkOut=" + this.checkOut +
-        ", status=" + this.status +
-        ", amount=" + this.amount +
-        '}';
+    return String.format(
+        """
+|----- Reservation #%d -----|
+| Guest: %s
+| CPF: %s
+| Check-in: %s
+| Check-out: %s
+| Status: %s
+| Number of Guests: %d
+| Amount: $%.2f
+| Payment Method: %s
+|---------------------------|
+        """,
+        this.getId(),
+        this.guest != null ? this.guest.getFullName() : "N/A",
+        this.guestCpf,
+        this.checkIn,
+        this.checkOut,
+        this.status,
+        this.numberOfGuests,
+        this.amount,
+        this.paymentMethod);
   }
 }

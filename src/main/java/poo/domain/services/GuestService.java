@@ -26,7 +26,7 @@ public class GuestService {
 
   public ArrayList<Guest> getAllGuests() throws GuestException {
     try {
-      return guestDao.find();
+      return guestDao.find(true);
     } catch (SQLException e) {
       throw new GuestException("Failed to retrieve guests: " + e.getMessage());
     }

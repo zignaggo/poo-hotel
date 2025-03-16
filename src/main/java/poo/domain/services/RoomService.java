@@ -19,19 +19,6 @@ public class RoomService {
     this.roomDao = new RoomDao(connection);
   }
 
-  public void list() {
-    try {
-      ArrayList<Room> rooms = roomDao.find();
-      if(rooms.isEmpty()) {
-        System.out.println("No rooms found");
-        return;
-      }
-      rooms.forEach(room -> System.out.println(room.toString()));
-    } catch (Exception e) {
-      System.out.println("Failed to list rooms: " + e.getMessage());
-    }
-  }
-
   public ArrayList<Room> getAllRooms() throws GuestException {
     try {
       return roomDao.find();

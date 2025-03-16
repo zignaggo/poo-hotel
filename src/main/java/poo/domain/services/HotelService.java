@@ -1,11 +1,9 @@
 package poo.domain.services;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Scanner;
 
 import poo.domain.entities.Guest;
 import poo.domain.entities.Reservation;
@@ -29,8 +27,7 @@ public class HotelService {
       "5. Listar Reservas",
       "6. Fazer Checkin",
       "7. Fazer Checkout",
-      "8. Limpar terminal",
-      "9. Sair",
+      "8. Sair",
   };
 
   private final IFunctionality[] methods = {
@@ -39,23 +36,15 @@ public class HotelService {
       this::listGuests,
       this::listRooms,
       this::listReservations,
-      this::makeCheckin,
-      this::makeCheckout,
+      this::makeCheckIn,
+      this::makeCheckOut,
   };
-
-  public String[] getOptions() {
-    return this.options;
-  }
-
-  public IFunctionality[] getMethods() {
-    return this.methods;
-  }
 
   public void start() {
     System.out.println(this.getLogo());
     int option = -1;
     while (true) {
-      System.out.println("\n\n\n-----------Menu-----------\n" + String.join("\n", this.getOptions()));
+      System.out.println("\n\n\n-----------Menu-----------\n" + String.join("\n", this.options));
       option = getter.getInt("Choose an option: ");
       System.out.print("\033[H\033[2J");
       System.out.flush();
@@ -75,19 +64,9 @@ public class HotelService {
     }
   }
 
-  private String readFile(File file) throws FileNotFoundException {
-    Scanner scanner = new Scanner(file);
-    String result = "";
-    while (scanner.hasNextLine()) {
-      result += scanner.nextLine() + "\n";
-    }
-    scanner.close();
-    return result;
-  }
-
   public String getLogo() {
     try {
-      return this.readFile(new File("./logo.txt"));
+      return this.getter.readFile(new File("./logo.txt"));
     } catch (Exception e) {
       return "Hotel";
     }
@@ -118,7 +97,8 @@ public class HotelService {
     try {
       ArrayList<Guest> guests = guestService.getAllGuests();
       Guest selectedGuest = null;
-      guests.forEach(guest -> System.out.println(guest.getId() + ": " + guest.getFullName()));
+      guests.forEach(guest -> System.out.printf("ID: %d, CPF: %s, Name: %s\n", guest.getId(), guest.getCpf(),
+      guest.getFullName()));
 
       int guestId = getter.getInt("Guest ID: ");
 
@@ -139,7 +119,7 @@ public class HotelService {
       Date checkOut = getter.getDate("Check-out date: ");
       String paymentMethod = getter.getString("Payment method: ");
 
-      reservationService.createReservation(selectedGuest.getId(), numberOfGuests, checkIn, checkOut, paymentMethod);
+      reservationService.create(selectedGuest.getId(), numberOfGuests, checkIn, checkOut, paymentMethod);
     } catch (Exception e) {
       System.out.println("Failed to create reservation: " + e.getMessage());
     }
@@ -149,8 +129,12 @@ public class HotelService {
     GuestService guestService = new GuestService(connection);
     try {
       ArrayList<Guest> guests = guestService.getAllGuests();
-      guests.forEach(guest -> System.out.printf("ID: %d, CPF: %s, Name: %s\n", guest.getId(), guest.getCpf(),
-          guest.getFullName()));
+      if (guests.isEmpty()) {
+        System.out.println("No guests found");
+        return;
+      }
+      System.out.printf("Listing %d guests:\n", guests.size());
+      guests.forEach(guest -> System.out.println(guest.toString()));
     } catch (Exception e) {
       System.out.println("Failed to list guests: " + e.getMessage());
     }
@@ -164,7 +148,8 @@ public class HotelService {
         System.out.println("No rooms found");
         return;
       }
-      rooms.forEach(room -> System.out.printf("ID: %d, Type: %s, Price: %.2f\n", room.getId(), room.getRoomType(), room.getPricePerNight()));
+      System.out.printf("Listing %d rooms: \n", rooms.size());
+      rooms.forEach(room -> System.out.println(room.toString()));
     } catch (Exception e) {
       System.out.println("Failed to list rooms: " + e.getMessage());
     }
@@ -174,18 +159,41 @@ public class HotelService {
     ReservationService reservationService = new ReservationService(connection);
     try {
       ArrayList<Reservation> reservations = reservationService.getAllReservations();
-      reservations.forEach(
-          reservation -> System.out.printf("ID: %d, Number of guests: %d\n", reservation.getId(),
-              reservation.getNumberOfGuests()));
+      if (reservations.isEmpty()) {
+        System.out.println("No reservations found");
+        return;
+      }
+      System.out.printf("Listing %d reservations:\n", reservations.size());
+      reservations.forEach(reservation -> System.out.println(reservation.toString()));
     } catch (Exception e) {
       System.out.println("Failed to list reservations: " + e.getMessage());
     }
   }
 
-  public void makeCheckin() {
+  public void makeCheckIn() {
+    try {
+      ReservationService reservationService = new ReservationService(connection);
+      reservationService.getAllReservations()
+          .forEach(reservation -> System.out.println(reservation.toString()));
+      int reservationId = getter.getInt("Reservation ID: ");
+      reservationService.checkIn(reservationId, 0.0);
+      System.out.println("Check-in completed successfully");
+    } catch (Exception e) {
+      System.out.println("Failed to list reservations: " + e.getMessage());
+    }
   }
 
-  public void makeCheckout() {
+  public void makeCheckOut() {
+    try {
+      ReservationService reservationService = new ReservationService(connection);
+      reservationService.getAllReservations()
+          .forEach(reservation -> System.out.println(reservation.toString()));
+      int reservationId = getter.getInt("Reservation ID: ");
+      reservationService.checkOut(reservationId);
+      System.out.println("Check-out completed successfully");
+    } catch (Exception e) {
+      System.out.println("Failed to list reservations: " + e.getMessage());
+    }
   }
 
   @FunctionalInterface

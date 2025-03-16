@@ -107,4 +107,31 @@ public class GuestDao extends BaseDao<Guest> {
     stmt.close();
     return guests;
   }
+
+  public ArrayList<Guest> find(Boolean hasReservations) throws SQLException {
+    PreparedStatement stmt = this.getConnection().prepareStatement(
+      """
+      SELECT count(r.id) reservation_count, g.full_name, g.id, g.cpf, g.email, g.address, g.phone, g.birth_date
+      FROM guests g
+      LEFT JOIN reservations r ON g.cpf = r.guest_cpf
+      group by g.full_name, g.id, g.cpf, g.email, g.address, g.phone, g.birth_date
+      order by g.id
+      """
+    );
+    ResultSet rs = stmt.executeQuery();
+    ArrayList<Guest> guests = new ArrayList<>();
+    while (rs.next())
+      guests.add(
+          new Guest(
+              rs.getInt("id"),
+              rs.getString("cpf"),
+              rs.getString("full_name"),
+              rs.getString("email"),
+              rs.getString("phone"),
+              rs.getString("address"),
+              rs.getDate("birth_date"),
+              rs.getInt("reservation_count")));
+    stmt.close();
+    return guests;
+  }
 }

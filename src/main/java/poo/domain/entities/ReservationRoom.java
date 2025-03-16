@@ -5,6 +5,13 @@ public class ReservationRoom {
   private int roomId;
   private double price;
 
+
+  public ReservationRoom(int reservationId, int roomId, double price) {
+    this.reservationId = reservationId;
+    this.roomId = roomId;
+    this.price = price;
+  }
+
   public ReservationRoom(int reservationId, int roomId) {
     this.reservationId = reservationId;
     this.roomId = roomId;

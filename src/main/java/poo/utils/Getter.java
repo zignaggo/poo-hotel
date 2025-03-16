@@ -1,5 +1,7 @@
 package poo.utils;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,6 +17,16 @@ public class Getter implements AutoCloseable {
     this.scanner.useDelimiter("\n");
   }
 
+  public String readFile(File file) throws FileNotFoundException {
+    Scanner scanner = new Scanner(file);
+    String result = "";
+    while (scanner.hasNextLine()) {
+      result += scanner.nextLine() + "\n";
+    }
+    scanner.close();
+    return result;
+  }
+
   public void close() {
     this.scanner.close();
   }
@@ -22,7 +34,7 @@ public class Getter implements AutoCloseable {
   public int getInt(String message) {
     int value = 0;
     try {
-      System.out.println("\n"+message);
+      System.out.println("\n" + message);
       value = Integer.parseInt(this.scanner.next().trim());
       this.scanner.nextLine();
     } catch (Exception e) {
@@ -35,7 +47,7 @@ public class Getter implements AutoCloseable {
   public double getDouble(String message) {
     double value = 0.0;
     try {
-      System.out.println("\n"+message);
+      System.out.println("\n" + message);
       value = Double.parseDouble(this.scanner.next().trim());
       this.scanner.nextLine();
     } catch (Exception e) {
@@ -89,5 +101,5 @@ public class Getter implements AutoCloseable {
       return this.getDate(message);
     }
   }
-  
+
 }

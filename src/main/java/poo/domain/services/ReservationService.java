@@ -6,35 +6,43 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Optional;
 import poo.domain.entities.Guest;
+import poo.domain.entities.Movement;
+import poo.domain.entities.MovementEnum;
 import poo.domain.entities.Reservation;
 import poo.domain.entities.ReservationEnum;
 import poo.domain.entities.ReservationRoom;
 import poo.domain.entities.Room;
 import poo.domain.expections.ReservationException;
 import poo.infra.GuestDao;
+import poo.infra.MovementDao;
 import poo.infra.ReservationDao;
 import poo.infra.ReservationRoomDao;
 import poo.infra.RoomDao;
 
-public class ReservationService {
+public class ReservationService extends BaseService {
   private final ReservationDao reservationDao;
   private final GuestDao guestDao;
   private final RoomDao roomDao;
   private final ReservationRoomDao reservationRoomDao;
+  private final MovementDao movementsDao;
 
   public ReservationService(Connection connection) {
+    super(connection);
     this.reservationDao = new ReservationDao(connection);
     this.guestDao = new GuestDao(connection);
     this.roomDao = new RoomDao(connection);
     this.reservationRoomDao = new ReservationRoomDao(connection);
+    this.movementsDao = new MovementDao(connection);
   }
 
   public ReservationService(ReservationDao reservationDao, GuestDao guestDao,
-      RoomDao roomDao, ReservationRoomDao reservationRoomDao) {
+      RoomDao roomDao, ReservationRoomDao reservationRoomDao, MovementDao movementsDao, Connection connection) {
+    super(connection);
     this.reservationDao = reservationDao;
     this.guestDao = guestDao;
     this.roomDao = roomDao;
     this.reservationRoomDao = reservationRoomDao;
+    this.movementsDao = movementsDao;
   }
 
   private void validateReservationDetails(Date checkIn, Date checkOut, int numberOfGuests) throws ReservationException {
@@ -46,20 +54,8 @@ public class ReservationService {
       throw new ReservationException("Check-in date must be before check-out date");
     }
 
-    if (checkIn.before(new Date())) {
-      throw new ReservationException("Check-in date must be in the future");
-    }
-
     if (numberOfGuests <= 0) {
       throw new ReservationException("Number of guests must be positive");
-    }
-  }
-
-  public ArrayList<Reservation> getAllReservations() throws ReservationException {
-    try {
-      return reservationDao.find();
-    } catch (SQLException e) {
-      throw new ReservationException("Failed to retrieve reservations: " + e.getMessage(), e);
     }
   }
 
@@ -84,7 +80,15 @@ public class ReservationService {
     }
   }
 
-  public Reservation createReservation(
+  public ArrayList<Reservation> getAllReservations() throws ReservationException {
+    try {
+      return reservationDao.find(true);
+    } catch (SQLException e) {
+      throw new ReservationException("Failed to retrieve reservations: " + e.getMessage(), e);
+    }
+  }
+
+  public Reservation create(
       int guestId,
       int numberOfGuests,
       Date checkIn,
@@ -120,11 +124,64 @@ public class ReservationService {
               amount,
               paymentMethod));
 
-      reservationRoomDao.create(new ReservationRoom(reservation.getId(), selectedRoom.getId()));
+      reservationRoomDao
+          .create(new ReservationRoom(reservation.getId(), selectedRoom.getId(), selectedRoom.getPricePerNight()));
 
       return reservation;
     } catch (SQLException e) {
       throw new ReservationException("Database error: " + e.getMessage(), e);
+    }
+  }
+
+  private Reservation _checkIn(Integer reservationId, Double amount) throws SQLException {
+    Optional<Reservation> reservation = this.reservationDao.find(reservationId);
+    if (!reservation.isPresent()) {
+      throw new SQLException("Reservation not found with ID: " + reservationId);
+    }
+    System.out.println(reservation.get().getStatus());
+    if (reservation.get().getStatus() != ReservationEnum.OPENED) {
+      throw new SQLException("Reservation is not opened: " + reservation.get().getStatus());
+    }
+    reservation.get().setStatus(ReservationEnum.IN_PROGRESS);
+    this.reservationDao.update(reservation.get());
+    this.movementsDao
+        .create(new Movement(reservationId, MovementEnum.CHECK_IN, new Date(), amount));
+    return reservation.get();
+  }
+
+  public Reservation checkIn(int reservationId, double amount) throws ReservationException {
+    try {
+      return this.runTransaction(this::_checkIn, reservationId, amount).get();
+    } catch (SQLException e) {
+      throw new ReservationException("Check-in error: " + e.getMessage(), e);
+    }
+  }
+
+  private Reservation _checkOut(Integer reservationId) throws SQLException {
+    Optional<Reservation> reservation = this.reservationDao.find(reservationId);
+    if (!reservation.isPresent()) {
+      throw new SQLException("Reservation not found with ID: " + reservationId);
+    }
+    if (reservation.get().getStatus() != ReservationEnum.IN_PROGRESS) {
+      throw new SQLException("Reservation is not in progress: " + reservation.get().getStatus());
+    }
+    Optional<Movement> movement = this.movementsDao.find(reservationId, MovementEnum.CHECK_IN);
+    if (!movement.isPresent()) {
+      throw new SQLException("Check-in movement not found for reservation ID: " + reservationId);
+    }
+    double missingAmount = reservation.get().getAmount() - movement.get().getAmount();
+    reservation.get().setStatus(ReservationEnum.FINISHED);
+    this.reservationDao.update(reservation.get());
+    this.movementsDao
+    .create(new Movement(reservationId, MovementEnum.CHECK_OUT, new Date(), missingAmount));
+    return reservation.get();
+  }
+
+  public Reservation checkOut(int reservationId) throws ReservationException {
+    try {
+      return this.runTransaction(this::_checkOut, reservationId).get();
+    } catch (SQLException e) {
+      throw new ReservationException("Checkout error: " + e.getMessage(), e);
     }
   }
 }
