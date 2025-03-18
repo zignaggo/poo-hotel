@@ -40,16 +40,20 @@ public class GuestService {
   }
 
   public Guest create(String name, String cpf, String email, String phone, String address,
-    Date birthDate) throws SQLException, GuestException {
-    Optional<Guest> existingGuest = guestDao.find(cpf);
-    if (!isGuest18YearsOld(birthDate)) {
-      throw new GuestException("Guest must be at least 18 years old");
-    }
+      Date birthDate) throws GuestException {
+    try {
+      Optional<Guest> existingGuest = guestDao.find(cpf);
+      if (!isGuest18YearsOld(birthDate)) {
+        throw new GuestException("Guest must be at least 18 years old");
+      }
 
-    if (existingGuest.isPresent()) {
-      Guest guest = existingGuest.get();
-      throw new GuestException("Guest already exists: " + guest.getFullName() + " (" + guest.getCpf() + ")");
+      if (existingGuest.isPresent()) {
+        Guest guest = existingGuest.get();
+        throw new GuestException("Guest already exists: " + guest.getFullName() + " (" + guest.getCpf() + ")");
+      }
+      return guestDao.create(new Guest(cpf, name, email, phone, address, birthDate));
+    } catch (SQLException e) {
+      throw new GuestException("Failed to create guest: " + e.getMessage());
     }
-    return guestDao.create(new Guest(cpf, name, email, phone, address, birthDate));
   }
 }
