@@ -9,6 +9,7 @@ import poo.domain.entities.Guest;
 import poo.domain.entities.Item;
 import poo.domain.entities.Reservation;
 import poo.domain.entities.Room;
+import poo.domain.expections.ReservationException;
 import poo.utils.Getter;
 
 public class HotelService {
@@ -21,16 +22,17 @@ public class HotelService {
   }
 
   private final String[] options = {
-      "1. Cadastrar Hospede",
-      "2. Fazer Reserva",
-      "3. Fazer Checkin",
-      "4. Fazer Checkout",
-      "5. Fazer Pedido",
-      "6. Listar Hospedes",
-      "7. Listar Quartos",
-      "8. Listar Reservas",
-      "9. Listar Itens",
-      "10. Sair",
+      "1.  Cadastrar Hospede",
+      "2.  Fazer Reserva",
+      "3.  Fazer Checkin",
+      "4.  Fazer Checkout",
+      "5.  Fazer Pedido",
+      "6.  Listar Hospedes",
+      "7.  Listar Quartos",
+      "8.  Listar Reservas",
+      "9.  Listar Itens",
+      "10. Listar Consumos",
+      "11. Sair",
   };
 
   private final IFunctionality[] methods = {
@@ -43,6 +45,7 @@ public class HotelService {
       this::listRooms,
       this::listReservations,
       this::listItems,
+      this::listConsumptions,
   };
 
   public void start() {
@@ -103,7 +106,7 @@ public class HotelService {
       ArrayList<Guest> guests = guestService.getAllGuests();
       Guest selectedGuest = null;
       guests.forEach(guest -> System.out.printf("ID: %d, CPF: %s, Name: %s\n", guest.getId(), guest.getCpf(),
-      guest.getFullName()));
+          guest.getFullName()));
 
       int guestId = getter.getInt("Guest ID: ");
 
@@ -168,7 +171,7 @@ public class HotelService {
         System.out.println("No reservations found");
         return;
       }
-      System.out.printf("Listing %d reservations:\n", reservations.size());
+      System.out.printf("\nListing %d reservations:\n", reservations.size());
       reservations.forEach(reservation -> System.out.println(reservation.toString()));
     } catch (Exception e) {
       System.out.println("Failed to list reservations: " + e.getMessage());
@@ -202,7 +205,26 @@ public class HotelService {
   }
 
   public void makeOrder() {
-    System.out.println("Making order: Not implemented yet\n");
+    try {
+      ComsumptionService comsumptionService = new ComsumptionService(connection);
+      this.listItems();
+      int itemId = getter.getInt("Item ID: ");
+      int quantity = getter.getInt("Quantity: ");
+
+      ReservationService reservationService = new ReservationService(connection);
+      ArrayList<Reservation> reservations = reservationService.getAllReservations();
+      if (reservations.isEmpty()) {
+        throw new ReservationException("No reservations found");
+      }
+      System.out.printf("Listing %d reservations:\n", reservations.size());
+      reservations.forEach(reservation -> System.out.println(reservation.toString()));
+      int reservationId = getter.getInt("Reservation ID: ");
+
+      comsumptionService.consume(itemId, reservationId, quantity);
+      System.out.println("Consumption completed successfully");
+    } catch (Exception e) {
+      System.out.println("Failed to consume item: " + e.getMessage());
+    }
   }
 
   public void listItems() {
@@ -217,6 +239,17 @@ public class HotelService {
       items.forEach(item -> System.out.println(item.toString()));
     } catch (Exception e) {
       System.out.println("Failed to list items: " + e.getMessage());
+    }
+  }
+
+  public void listConsumptions() {
+    ComsumptionService comsumptionService = new ComsumptionService(connection);
+    try {
+      this.listReservations();
+      int reservationId = getter.getInt("Reservation ID: ");
+      comsumptionService.listConsumptions(reservationId);
+    } catch (Exception e) {
+      System.out.println("Failed to list consumptions: " + e.getMessage());
     }
   }
 

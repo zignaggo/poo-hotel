@@ -7,6 +7,11 @@ public class Item extends BaseEntity {
   private String name;
   private String description;
 
+  public Item(int id, String name, double price) {
+    super(id);
+    this.price = price;
+    this.name = name;
+  }
   public Item(String type, String name, String description, int availableQuantity, double price) {
     this.type = type;
     this.availableQuantity = availableQuantity;
@@ -69,18 +74,18 @@ public class Item extends BaseEntity {
     return String.format(
         """
             |----- Item #%d -----|
-            | Type: %s
-            | Available Quantity: %d
-            | Price: $%.2f
             | Name: %s
+            | Type: %s
+            | Price: $%.2f
+            | Available Quantity: %d
             | Description: %s
             |--------------------|
                     """,
         this.getId(),
-        this.type,
-        this.availableQuantity,
-        this.price,
         this.name,
+        this.type,
+        this.price,
+        this.availableQuantity,
         this.description);
   }
 }

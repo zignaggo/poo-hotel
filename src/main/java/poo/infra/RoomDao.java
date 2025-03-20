@@ -27,9 +27,7 @@ public class RoomDao extends BaseDao<Room> {
 
     if (room instanceof DeluxeRoom) {
       DeluxeRoom deluxeRoom = (DeluxeRoom) room;
-      stmt.setBoolean(5, deluxeRoom.hasJacuzzi());
-    } else {
-      stmt.setBoolean(5, false);
+      stmt.setBoolean(5, deluxeRoom.hasJacuzzi() || false);
     }
    
     stmt.execute();

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import poo.domain.entities.Room;
 import poo.domain.expections.GuestException;
+import poo.domain.expections.ReservationException;
 import poo.infra.RoomDao;
 
 public class RoomService {
@@ -14,7 +15,7 @@ public class RoomService {
   public RoomService(RoomDao roomDao) {
     this.roomDao = roomDao;
   }
-  
+
   public RoomService(Connection connection) {
     this.roomDao = new RoomDao(connection);
   }
@@ -24,6 +25,14 @@ public class RoomService {
       return roomDao.find();
     } catch (SQLException e) {
       throw new GuestException("Failed to retrieve guests: " + e.getMessage());
+    }
+  }
+
+  public ArrayList<Room> findAvailableRooms(int numberOfGuests) throws ReservationException {
+    try {
+      return roomDao.find(numberOfGuests);
+    } catch (SQLException e) {
+      throw new ReservationException("Failed to find available rooms: " + e.getMessage(), e);
     }
   }
 }

@@ -3,6 +3,7 @@ package poo.domain.services;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
 import poo.domain.entities.Guest;
@@ -17,12 +18,11 @@ import poo.infra.GuestDao;
 import poo.infra.MovementDao;
 import poo.infra.ReservationDao;
 import poo.infra.ReservationRoomDao;
-import poo.infra.RoomDao;
 
 public class ReservationService extends BaseService {
   private final ReservationDao reservationDao;
   private final GuestDao guestDao;
-  private final RoomDao roomDao;
+  private final RoomService roomService;
   private final ReservationRoomDao reservationRoomDao;
   private final MovementDao movementsDao;
 
@@ -30,22 +30,34 @@ public class ReservationService extends BaseService {
     super(connection);
     this.reservationDao = new ReservationDao(connection);
     this.guestDao = new GuestDao(connection);
-    this.roomDao = new RoomDao(connection);
+    this.roomService = new RoomService(connection);
     this.reservationRoomDao = new ReservationRoomDao(connection);
     this.movementsDao = new MovementDao(connection);
   }
 
   public ReservationService(ReservationDao reservationDao, GuestDao guestDao,
-      RoomDao roomDao, ReservationRoomDao reservationRoomDao, MovementDao movementsDao, Connection connection) {
+      RoomService roomService, ReservationRoomDao reservationRoomDao, MovementDao movementsDao, Connection connection) {
     super(connection);
     this.reservationDao = reservationDao;
     this.guestDao = guestDao;
-    this.roomDao = roomDao;
+    this.roomService = roomService;
     this.reservationRoomDao = reservationRoomDao;
     this.movementsDao = movementsDao;
   }
 
   private void validateReservationDetails(Date checkIn, Date checkOut, int numberOfGuests) throws ReservationException {
+    
+    Calendar calendar = Calendar.getInstance();
+    calendar.set(Calendar.HOUR_OF_DAY, 0);
+    calendar.set(Calendar.MINUTE, 0);
+    calendar.set(Calendar.SECOND, 0);
+    calendar.set(Calendar.MILLISECOND, 0);
+    Date today = calendar.getTime();
+
+    if(checkIn.before(today)) {
+      throw new ReservationException("Check-in date must be today or in the future");
+    }
+    
     if (checkIn == null || checkOut == null) {
       throw new ReservationException("Check-in and check-out dates are required");
     }
@@ -61,22 +73,9 @@ public class ReservationService extends BaseService {
 
   private Optional<Guest> findGuestById(int guestId) throws ReservationException {
     try {
-      for (Guest guest : guestDao.find()) {
-        if (guest.getId() == guestId) {
-          return Optional.of(guest);
-        }
-      }
-      return Optional.empty();
+      return guestDao.find(guestId);
     } catch (SQLException e) {
       throw new ReservationException("Failed to find guest: " + e.getMessage(), e);
-    }
-  }
-
-  private ArrayList<Room> findAvailableRooms(int numberOfGuests) throws ReservationException {
-    try {
-      return roomDao.find(numberOfGuests);
-    } catch (SQLException e) {
-      throw new ReservationException("Failed to find available rooms: " + e.getMessage(), e);
     }
   }
 
@@ -105,7 +104,7 @@ public class ReservationService extends BaseService {
       }
       Guest guest = guestOptional.get();
 
-      ArrayList<Room> availableRooms = findAvailableRooms(numberOfGuests);
+      ArrayList<Room> availableRooms = roomService.findAvailableRooms(numberOfGuests);
       if (availableRooms.isEmpty()) {
         throw new ReservationException("No available rooms for " + numberOfGuests + " guests");
       }
@@ -152,7 +151,7 @@ public class ReservationService extends BaseService {
   public Reservation checkIn(int reservationId, double amount) throws ReservationException {
     try {
       return this.runTransaction(this::_checkIn, reservationId, amount).get();
-    } catch (SQLException e) {
+    } catch (Exception e) {
       throw new ReservationException("Check-in error: " + e.getMessage(), e);
     }
   }
@@ -180,7 +179,7 @@ public class ReservationService extends BaseService {
   public Reservation checkOut(int reservationId) throws ReservationException {
     try {
       return this.runTransaction(this::_checkOut, reservationId).get();
-    } catch (SQLException e) {
+    } catch (Exception e) {
       throw new ReservationException("Checkout error: " + e.getMessage(), e);
     }
   }
