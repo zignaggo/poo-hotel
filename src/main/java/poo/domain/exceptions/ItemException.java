@@ -1,4 +1,4 @@
-package poo.domain.expections;
+package poo.domain.exceptions;
 
 public class ItemException extends Exception {
     public ItemException(String message) {

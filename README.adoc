@@ -16,7 +16,9 @@ Projeto apresentado como requisito para dispensa na disciplina
 * Estruturação do projeto em camadas (View, BO, VO, DAO);
 * Uso de exceções (deve-se cria exceções próprias e tratá-las corretamente);
 
-=== Modelagem
+=== Design patterns
+* Singleton
+* Factory
 
 ==== Relacional
 image::modeling/relational.jpg[./modeling/relational.jpg]

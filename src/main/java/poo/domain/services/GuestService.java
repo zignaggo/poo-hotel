@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.Optional;
 
 import poo.domain.entities.Guest;
-import poo.domain.expections.GuestException;
+import poo.domain.exceptions.GuestException;
 import poo.infra.GuestDao;
 import java.time.LocalDate;
 import java.time.Period;

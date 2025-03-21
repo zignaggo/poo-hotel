@@ -9,7 +9,7 @@ import poo.domain.entities.Guest;
 import poo.domain.entities.Item;
 import poo.domain.entities.Reservation;
 import poo.domain.entities.Room;
-import poo.domain.expections.ReservationException;
+import poo.domain.exceptions.ReservationException;
 import poo.utils.Getter;
 
 public class HotelService {

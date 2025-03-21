@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import poo.domain.entities.Item;
-import poo.domain.expections.ItemException;
+import poo.domain.exceptions.ItemException;
 import poo.infra.ItemDao;
 
 public class ItemService {

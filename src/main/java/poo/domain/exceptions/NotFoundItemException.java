@@ -1,4 +1,4 @@
-package poo.domain.expections;
+package poo.domain.exceptions;
 
 public class NotFoundItemException extends Exception {
   public NotFoundItemException() {

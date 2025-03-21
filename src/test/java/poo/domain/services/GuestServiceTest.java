@@ -23,7 +23,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import poo.domain.entities.Guest;
-import poo.domain.expections.GuestException;
+import poo.domain.exceptions.GuestException;
 import poo.infra.GuestDao;
 
 @ExtendWith(MockitoExtension.class)

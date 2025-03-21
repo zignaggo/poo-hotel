@@ -27,7 +27,7 @@ import poo.domain.entities.Reservation;
 import poo.domain.entities.ReservationEnum;
 import poo.domain.entities.ReservationRoom;
 import poo.domain.entities.Room;
-import poo.domain.expections.ReservationException;
+import poo.domain.exceptions.ReservationException;
 import poo.infra.GuestDao;
 import poo.infra.MovementDao;
 import poo.infra.ReservationDao;

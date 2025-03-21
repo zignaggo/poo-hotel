@@ -5,8 +5,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import poo.domain.entities.Room;
-import poo.domain.expections.GuestException;
-import poo.domain.expections.ReservationException;
+import poo.domain.exceptions.GuestException;
+import poo.domain.exceptions.ReservationException;
 import poo.infra.RoomDao;
 
 public class RoomService {
