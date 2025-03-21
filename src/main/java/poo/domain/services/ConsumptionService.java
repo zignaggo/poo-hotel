@@ -107,7 +107,7 @@ public class ConsumptionService extends BaseService {
 			}
 			ArrayList<ConsumptionItem> consumptionItems = consumptionItemDao
 					.findByConsumptionIds(consumptions.stream().map(Consumption::getId).toList());
-			if (consumptions.isEmpty()) {
+			if (consumptionItems.isEmpty()) {
 				System.out.println("No consumptions found");
 				return;
 			}

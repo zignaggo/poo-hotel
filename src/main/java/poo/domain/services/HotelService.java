@@ -20,15 +20,20 @@ import poo.utils.Getter;
 public class HotelService {
   private Connection connection;
   private Getter getter;
-  private ReservationService reservationService = new ReservationService(connection);
-  private GuestService guestService = new GuestService(connection);
-  private RoomService roomService = new RoomService(connection);
-  private ItemService itemService = new ItemService(connection);
-  private ConsumptionService consumptionService = new ConsumptionService(connection);
+  private ReservationService reservationService;
+  private GuestService guestService;
+  private RoomService roomService;
+  private ItemService itemService;
+  private ConsumptionService consumptionService;
 
   public HotelService(Connection connection, Getter getter) {
     this.connection = connection;
     this.getter = getter;
+    this.reservationService = new ReservationService(connection);
+    this.guestService = new GuestService(connection);
+    this.roomService = new RoomService(connection);
+    this.itemService = new ItemService(connection);
+    this.consumptionService = new ConsumptionService(connection);
   }
 
   private final String[] options = {
