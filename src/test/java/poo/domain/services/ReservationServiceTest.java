@@ -125,8 +125,6 @@ class ReservationServiceTest {
         Date checkOut = getValidCheckOutDate();
         String paymentMethod = "Credit Card";
         
-        ArrayList<Guest> guests = new ArrayList<>(); 
-        
         when(guestDao.find(guestId)).thenReturn(Optional.empty());
         
         ReservationException exception = assertThrows(ReservationException.class, () -> 

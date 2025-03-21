@@ -20,3 +20,9 @@ Projeto apresentado como requisito para dispensa na disciplina
 
 ==== Relacional
 image::modeling/relational.jpg[./modeling/relational.jpg]
+
+
+==== How to run?
+
+* docker compose up -d --build
+* docker attach <container-id>

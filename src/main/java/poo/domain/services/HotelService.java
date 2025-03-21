@@ -10,11 +10,6 @@ import poo.domain.entities.Item;
 import poo.domain.entities.Reservation;
 import poo.domain.entities.Room;
 import poo.domain.expections.ReservationException;
-import poo.infra.GuestDao;
-import poo.infra.MovementDao;
-import poo.infra.ReservationDao;
-import poo.infra.ReservationRoomDao;
-import poo.infra.RoomDao;
 import poo.utils.Getter;
 
 public class HotelService {
@@ -97,7 +92,6 @@ public class HotelService {
 
   public void createGuest() {
     try {
-      GuestService guestService = new GuestService(connection, new GuestDao(connection));
       System.out.println("Creating guest\n");
       String cpf = getter.getString("CPF: ", "^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$",
           "Invalid CPF");
@@ -115,7 +109,6 @@ public class HotelService {
   }
 
   public void makeReservation() {
-    GuestService guestService = new GuestService(connection, new GuestDao(connection));
     try {
       ArrayList<Guest> guests = guestService.getAllGuests();
       Guest selectedGuest = null;
@@ -218,10 +211,6 @@ public class HotelService {
       this.listItems();
       int itemId = getter.getInt("Item ID: ");
       int quantity = getter.getInt("Quantity: ");
-
-      ReservationService reservationService = new ReservationService(connection, new ReservationDao(connection),
-          new GuestDao(connection), new RoomDao(connection), new ReservationRoomDao(connection),
-          new MovementDao(connection));
       ArrayList<Reservation> reservations = reservationService.getAllReservations();
       if (reservations.isEmpty()) {
         throw new ReservationException("No reservations found");

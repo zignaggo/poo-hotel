@@ -88,6 +88,12 @@ public class ReservationService extends BaseService {
     }
   }
 
+  private int getDaysBetween(Date checkIn, Date checkOut) {
+    Long diff = checkOut.getTime() - checkIn.getTime();
+    int days = (int) (diff / (1000 * 60 * 60 * 24));
+    return days > 0 ? days : 1;
+  }
+
   public Reservation create(
       int guestId,
       int numberOfGuests,
@@ -112,7 +118,7 @@ public class ReservationService extends BaseService {
 
       Room selectedRoom = availableRooms.get(0);
 
-      double amount = selectedRoom.calculatePrice(numberOfGuests);
+      double amount = selectedRoom.calculatePrice(getDaysBetween(checkIn, checkOut));
 
       Reservation reservation = reservationDao.create(
           new Reservation(
