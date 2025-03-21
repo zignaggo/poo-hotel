@@ -11,21 +11,30 @@ import poo.domain.entities.ConsumptionItem;
 import poo.domain.entities.Item;
 import poo.domain.entities.Reservation;
 import poo.domain.entities.ReservationEnum;
-import poo.domain.expections.ComsumptionException;
+import poo.domain.expections.ConsumptionException;
 import poo.domain.expections.NotFoundItemException;
 import poo.infra.ConsumptionDao;
 import poo.infra.ConsumptionItemDao;
 import poo.infra.ItemDao;
 import poo.infra.ReservationDao;
 
-public class ComsumptionService extends BaseService {
+public class ConsumptionService extends BaseService {
 
 	private final ConsumptionDao consumptionDao;
 	private final ConsumptionItemDao consumptionItemDao;
 	private final ReservationDao reservationDao;
 	private final ItemDao itemDao;
 
-	public ComsumptionService(Connection connection) {
+	public ConsumptionService(Connection connection, ConsumptionDao consumptionDao,
+			ConsumptionItemDao consumptionItemDao, ReservationDao reservationDao, ItemDao itemDao) {
+		super(connection);
+		this.consumptionDao = consumptionDao;
+		this.consumptionItemDao = consumptionItemDao;
+		this.itemDao = itemDao;
+		this.reservationDao = reservationDao;
+	}
+
+	public ConsumptionService(Connection connection) {
 		super(connection);
 		this.consumptionDao = new ConsumptionDao(connection);
 		this.consumptionItemDao = new ConsumptionItemDao(connection);
@@ -33,43 +42,43 @@ public class ComsumptionService extends BaseService {
 		this.reservationDao = new ReservationDao(connection);
 	}
 
-	public ArrayList<Consumption> getAllConsumptions() throws ComsumptionException {
+	public ArrayList<Consumption> getAllConsumptions() throws ConsumptionException {
 		try {
 			return consumptionDao.find();
 		} catch (SQLException e) {
-			throw new ComsumptionException("Failed to retrieve consumptions: " + e.getMessage());
+			throw new ConsumptionException("Failed to retrieve consumptions: " + e.getMessage());
 		}
 	}
 
 	public Item validateConsumptionDetails(Integer itemId, Integer reservationId, Integer quantity)
-			throws ComsumptionException, NotFoundItemException {
+			throws ConsumptionException, NotFoundItemException {
 		try {
 			Optional<Item> item = itemDao.find(itemId);
-			Optional<Reservation> reservation = reservationDao.find(reservationId);
 			if (item.isEmpty()) {
 				throw new NotFoundItemException();
 			}
+			Optional<Reservation> reservation = reservationDao.find(reservationId);
 			if (reservation.isEmpty()) {
-				throw new ComsumptionException("Reservation not found");
+				throw new ConsumptionException("Reservation not found");
 			}
 			if (reservation.get().getStatus() != ReservationEnum.IN_PROGRESS) {
-				throw new ComsumptionException("Reservation is not in progress");
+				throw new ConsumptionException("Reservation is not in progress");
 			}
 			if (quantity <= 0) {
-				throw new ComsumptionException("Quantity must be positive");
+				throw new ConsumptionException("Quantity must be positive");
 			}
 			if (item.get().getAvailableQuantity() < quantity) {
-				throw new ComsumptionException("Not enough quantity");
+				throw new ConsumptionException("Not enough quantity");
 			}
 			return item.get();
 		} catch (SQLException e) {
-			throw new ComsumptionException(e.getMessage(), e);
+			throw new ConsumptionException(e.getMessage(), e);
 		}
 
 	}
 
 	public Consumption _consume(Integer itemId, Integer reservationId, Integer quantity)
-			throws ComsumptionException, NotFoundItemException, SQLException {
+			throws ConsumptionException, NotFoundItemException, SQLException {
 		Item item = this.validateConsumptionDetails(itemId, reservationId, quantity);
 		item.setAvailableQuantity(item.getAvailableQuantity() - quantity);
 		itemDao.update(item);
@@ -81,18 +90,18 @@ public class ComsumptionService extends BaseService {
 	}
 
 	public Optional<Consumption> consume(Integer itemId, Integer reservationId, Integer quantity)
-			throws ComsumptionException, NotFoundItemException, SQLException {
+			throws ConsumptionException, NotFoundItemException, SQLException {
 		try {
 			return this.runTransaction(this::_consume, itemId, reservationId, quantity);
 		} catch (Exception e) {
-			throw new ComsumptionException(e.getMessage(), e);
+			throw new ConsumptionException(e.getMessage(), e);
 		}
 	}
 
-	public void listConsumptions(Integer reservationId) throws ComsumptionException {
+	public void listConsumptions(Integer reservationId) throws ConsumptionException {
 		try {
 			ArrayList<Consumption> consumptions = consumptionDao.findByReservationId(reservationId);
-			if(consumptions.isEmpty()) {
+			if (consumptions.isEmpty()) {
 				System.out.println("No consumptions found");
 				return;
 			}
@@ -110,7 +119,7 @@ public class ComsumptionService extends BaseService {
 				System.out.println(consumption.toString());
 			});
 		} catch (Exception e) {
-			throw new ComsumptionException("Failed to list consumptions: " + e.getMessage(), e);
+			throw new ConsumptionException("Failed to list consumptions: " + e.getMessage(), e);
 		}
 	}
 }

@@ -18,6 +18,9 @@ public class ItemService {
 	public ItemService(Connection connection) {
 		this.itemDao = new ItemDao(connection);
 	}
+	public ItemService(Connection connection, ItemDao itemDao) {
+		this.itemDao = itemDao;
+	}
 
 	public ArrayList<Item> getAllItems() throws ItemException {
 		try {

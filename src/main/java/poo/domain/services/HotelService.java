@@ -10,11 +10,21 @@ import poo.domain.entities.Item;
 import poo.domain.entities.Reservation;
 import poo.domain.entities.Room;
 import poo.domain.expections.ReservationException;
+import poo.infra.GuestDao;
+import poo.infra.MovementDao;
+import poo.infra.ReservationDao;
+import poo.infra.ReservationRoomDao;
+import poo.infra.RoomDao;
 import poo.utils.Getter;
 
 public class HotelService {
   private Connection connection;
   private Getter getter;
+  private ReservationService reservationService = new ReservationService(connection);
+  private GuestService guestService = new GuestService(connection);
+  private RoomService roomService = new RoomService(connection);
+  private ItemService itemService = new ItemService(connection);
+  private ConsumptionService consumptionService = new ConsumptionService(connection);
 
   public HotelService(Connection connection, Getter getter) {
     this.connection = connection;
@@ -82,7 +92,7 @@ public class HotelService {
 
   public void createGuest() {
     try {
-      GuestService guestService = new GuestService(connection);
+      GuestService guestService = new GuestService(connection, new GuestDao(connection));
       System.out.println("Creating guest\n");
       String cpf = getter.getString("CPF: ", "^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$",
           "Invalid CPF");
@@ -100,8 +110,7 @@ public class HotelService {
   }
 
   public void makeReservation() {
-    ReservationService reservationService = new ReservationService(connection);
-    GuestService guestService = new GuestService(connection);
+    GuestService guestService = new GuestService(connection, new GuestDao(connection));
     try {
       ArrayList<Guest> guests = guestService.getAllGuests();
       Guest selectedGuest = null;
@@ -134,7 +143,6 @@ public class HotelService {
   }
 
   public void listGuests() {
-    GuestService guestService = new GuestService(connection);
     try {
       ArrayList<Guest> guests = guestService.getAllGuests();
       if (guests.isEmpty()) {
@@ -149,7 +157,6 @@ public class HotelService {
   }
 
   public void listRooms() {
-    RoomService roomService = new RoomService(connection);
     try {
       ArrayList<Room> rooms = roomService.getAllRooms();
       if (rooms.isEmpty()) {
@@ -164,7 +171,6 @@ public class HotelService {
   }
 
   public void listReservations() {
-    ReservationService reservationService = new ReservationService(connection);
     try {
       ArrayList<Reservation> reservations = reservationService.getAllReservations();
       if (reservations.isEmpty()) {
@@ -180,7 +186,6 @@ public class HotelService {
 
   public void makeCheckIn() {
     try {
-      ReservationService reservationService = new ReservationService(connection);
       reservationService.getAllReservations()
           .forEach(reservation -> System.out.println(reservation.toString()));
       int reservationId = getter.getInt("Reservation ID: ");
@@ -193,7 +198,6 @@ public class HotelService {
 
   public void makeCheckOut() {
     try {
-      ReservationService reservationService = new ReservationService(connection);
       reservationService.getAllReservations()
           .forEach(reservation -> System.out.println(reservation.toString()));
       int reservationId = getter.getInt("Reservation ID: ");
@@ -206,12 +210,13 @@ public class HotelService {
 
   public void makeOrder() {
     try {
-      ComsumptionService comsumptionService = new ComsumptionService(connection);
       this.listItems();
       int itemId = getter.getInt("Item ID: ");
       int quantity = getter.getInt("Quantity: ");
 
-      ReservationService reservationService = new ReservationService(connection);
+      ReservationService reservationService = new ReservationService(connection, new ReservationDao(connection),
+          new GuestDao(connection), new RoomDao(connection), new ReservationRoomDao(connection),
+          new MovementDao(connection));
       ArrayList<Reservation> reservations = reservationService.getAllReservations();
       if (reservations.isEmpty()) {
         throw new ReservationException("No reservations found");
@@ -220,7 +225,7 @@ public class HotelService {
       reservations.forEach(reservation -> System.out.println(reservation.toString()));
       int reservationId = getter.getInt("Reservation ID: ");
 
-      comsumptionService.consume(itemId, reservationId, quantity);
+      consumptionService.consume(itemId, reservationId, quantity);
       System.out.println("Consumption completed successfully");
     } catch (Exception e) {
       System.out.println("Failed to consume item: " + e.getMessage());
@@ -228,7 +233,6 @@ public class HotelService {
   }
 
   public void listItems() {
-    ItemService itemService = new ItemService(connection);
     try {
       ArrayList<Item> items = itemService.getAllItems();
       if (items.isEmpty()) {
@@ -243,11 +247,10 @@ public class HotelService {
   }
 
   public void listConsumptions() {
-    ComsumptionService comsumptionService = new ComsumptionService(connection);
     try {
       this.listReservations();
       int reservationId = getter.getInt("Reservation ID: ");
-      comsumptionService.listConsumptions(reservationId);
+      consumptionService.listConsumptions(reservationId);
     } catch (Exception e) {
       System.out.println("Failed to list consumptions: " + e.getMessage());
     }

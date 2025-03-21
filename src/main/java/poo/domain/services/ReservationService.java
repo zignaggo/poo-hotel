@@ -18,31 +18,32 @@ import poo.infra.GuestDao;
 import poo.infra.MovementDao;
 import poo.infra.ReservationDao;
 import poo.infra.ReservationRoomDao;
+import poo.infra.RoomDao;
 
 public class ReservationService extends BaseService {
   private final ReservationDao reservationDao;
   private final GuestDao guestDao;
-  private final RoomService roomService;
+  private final RoomDao roomDao;
   private final ReservationRoomDao reservationRoomDao;
   private final MovementDao movementsDao;
+
+  public ReservationService( Connection connection, ReservationDao reservationDao, GuestDao guestDao,
+      RoomDao roomDao, ReservationRoomDao reservationRoomDao, MovementDao movementsDao) {
+    super(connection);
+    this.reservationDao = reservationDao;
+    this.guestDao = guestDao;
+    this.roomDao = roomDao;
+    this.reservationRoomDao = reservationRoomDao;
+    this.movementsDao = movementsDao;
+  }
 
   public ReservationService(Connection connection) {
     super(connection);
     this.reservationDao = new ReservationDao(connection);
     this.guestDao = new GuestDao(connection);
-    this.roomService = new RoomService(connection);
+    this.roomDao = new RoomDao(connection);
     this.reservationRoomDao = new ReservationRoomDao(connection);
     this.movementsDao = new MovementDao(connection);
-  }
-
-  public ReservationService(ReservationDao reservationDao, GuestDao guestDao,
-      RoomService roomService, ReservationRoomDao reservationRoomDao, MovementDao movementsDao, Connection connection) {
-    super(connection);
-    this.reservationDao = reservationDao;
-    this.guestDao = guestDao;
-    this.roomService = roomService;
-    this.reservationRoomDao = reservationRoomDao;
-    this.movementsDao = movementsDao;
   }
 
   private void validateReservationDetails(Date checkIn, Date checkOut, int numberOfGuests) throws ReservationException {
@@ -104,7 +105,7 @@ public class ReservationService extends BaseService {
       }
       Guest guest = guestOptional.get();
 
-      ArrayList<Room> availableRooms = roomService.findAvailableRooms(numberOfGuests);
+      ArrayList<Room> availableRooms = roomDao.find(numberOfGuests);
       if (availableRooms.isEmpty()) {
         throw new ReservationException("No available rooms for " + numberOfGuests + " guests");
       }

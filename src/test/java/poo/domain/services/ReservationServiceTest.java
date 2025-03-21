@@ -57,6 +57,9 @@ class ReservationServiceTest {
     @InjectMocks
     private ReservationService reservationService;
 
+    @InjectMocks
+    private RoomService roomService;
+
     private Date getValidCheckInDate() {
         return Date.from(LocalDate.now().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
@@ -96,7 +99,7 @@ class ReservationServiceTest {
         );
         expectedReservation.setId(1);
         
-        when(guestDao.find()).thenReturn(guests);
+        when(guestDao.find(guestId)).thenReturn(Optional.of(guest));
         when(roomDao.find(numberOfGuests)).thenReturn(rooms);
         when(reservationDao.create(any(Reservation.class))).thenReturn(expectedReservation);
         
@@ -107,7 +110,7 @@ class ReservationServiceTest {
         assertEquals(guest.getCpf(), result.getGuestCpf());
         assertEquals(ReservationEnum.OPENED, result.getStatus());
         
-        verify(guestDao, times(1)).find();
+        verify(guestDao, times(1)).find(guestId);
         verify(roomDao, times(1)).find(numberOfGuests);
         verify(reservationDao, times(1)).create(any(Reservation.class));
         verify(reservationRoomDao, times(1)).create(any(ReservationRoom.class));
@@ -124,14 +127,14 @@ class ReservationServiceTest {
         
         ArrayList<Guest> guests = new ArrayList<>(); 
         
-        when(guestDao.find()).thenReturn(guests);
+        when(guestDao.find(guestId)).thenReturn(Optional.empty());
         
         ReservationException exception = assertThrows(ReservationException.class, () -> 
             reservationService.create(guestId, numberOfGuests, checkIn, checkOut, paymentMethod)
         );
         
         assertEquals("Guest not found with ID: 999", exception.getMessage());
-        verify(guestDao, times(1)).find();
+        verify(guestDao, times(1)).find(guestId);
         verify(roomDao, never()).find(anyInt());
         verify(reservationDao, never()).create(any(Reservation.class));
     }
@@ -153,7 +156,7 @@ class ReservationServiceTest {
         
         ArrayList<Room> rooms = new ArrayList<>();
         
-        when(guestDao.find()).thenReturn(guests);
+        when(guestDao.find(guestId)).thenReturn(Optional.of(guest));
         when(roomDao.find(numberOfGuests)).thenReturn(rooms);
         
         ReservationException exception = assertThrows(ReservationException.class, () -> 
@@ -161,7 +164,7 @@ class ReservationServiceTest {
         );
         
         assertEquals("No available rooms for 10 guests", exception.getMessage());
-        verify(guestDao, times(1)).find();
+        verify(guestDao, times(1)).find(guestId);
         verify(roomDao, times(1)).find(numberOfGuests);
         verify(reservationDao, never()).create(any(Reservation.class));
     }
@@ -180,7 +183,7 @@ class ReservationServiceTest {
         );
         
         assertEquals("Check-in date must be before check-out date", exception.getMessage());
-        verify(guestDao, never()).find();
+        verify(guestDao, never()).find(guestId);
         verify(roomDao, never()).find(anyInt());
         verify(reservationDao, never()).create(any(Reservation.class));
     }

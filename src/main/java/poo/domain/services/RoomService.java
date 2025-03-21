@@ -20,6 +20,10 @@ public class RoomService {
     this.roomDao = new RoomDao(connection);
   }
 
+  public RoomService(Connection connection, RoomDao roomDao) {
+    this.roomDao = roomDao;
+  }
+
   public ArrayList<Room> getAllRooms() throws GuestException {
     try {
       return roomDao.find();

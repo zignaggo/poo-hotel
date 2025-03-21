@@ -69,10 +69,9 @@ public class ItemDao extends BaseDao<Item> {
 		ResultSet rs = stmt.executeQuery();
 		if (!rs.next())
 			return Optional.empty();
-		Optional<Item> item = Optional
-				.of(new Item(rs.getInt("id"), rs.getString("type"), rs.getString("name"), rs.getString("description"),
-						rs.getInt("available_quantity"), rs.getDouble("price")));
+		Item item = new Item(rs.getInt("id"), rs.getString("type"), rs.getString("name"), rs.getString("description"),
+			rs.getInt("available_quantity"), rs.getDouble("price"));
 		stmt.close();
-		return item;
+		return Optional.of(item);
 	}
 }

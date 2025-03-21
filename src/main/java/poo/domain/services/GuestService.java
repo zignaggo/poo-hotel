@@ -23,6 +23,9 @@ public class GuestService {
   public GuestService(Connection connection) {
     this.guestDao = new GuestDao(connection);
   }
+  public GuestService(Connection connection, GuestDao guestDao) {
+    this.guestDao = guestDao;
+  }
 
   public ArrayList<Guest> getAllGuests() throws GuestException {
     try {
